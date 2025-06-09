@@ -8,30 +8,86 @@
 </head>
 <body>
     <!-- Header -->
-    <header>
-        <div class="container header-content">
-            <div class="logo">Wy'sPortfolio</div>
-            <nav>
-                <ul>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#tutorials">Tutorials</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="contact.html" id="contactLink">Contact</a></li>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li>
-                        <div class="search-container">
-                            <input type="text" class="search-input" placeholder="Search projects & tutorials..." id="searchInput">
-                            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="m21 21-4.35-4.35"></path>
-                            </svg>
-                            <div class="search-results" id="searchResults"></div>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<!-- Updated Header Section -->
+<header>
+    <div class="container header-content">
+        <div class="logo" id="logoElement" title="Double-click to access dashboard">Wy'sPortfolio</div>
+        <nav>
+            <ul>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#tutorials">Tutorials</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="contact.html" id="contactLink">Contact</a></li>
+                <!-- Dashboard link removed from here -->
+                <li>
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search projects & tutorials..." id="searchInput">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <div class="search-results" id="searchResults"></div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<!-- JavaScript to handle double-click functionality -->
+<script>
+// Add this to your existing index.js file or include it in a script tag
+
+document.addEventListener('DOMContentLoaded', function() {
+    const logoElement = document.getElementById('logoElement');
+    
+    // Add double-click event listener to the logo
+    logoElement.addEventListener('dblclick', function(e) {
+        e.preventDefault(); // Prevent any default behavior
+        
+        // Navigate to dashboard
+        window.location.href = 'dashboard.html';
+    });
+    
+    // Optional: Add visual feedback for better UX
+    logoElement.addEventListener('click', function() {
+        // Add a brief visual feedback on single click
+        logoElement.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            logoElement.style.transform = 'scale(1)';
+        }, 100);
+    });
+    
+    // Optional: Change cursor to indicate it's clickable
+    logoElement.style.cursor = 'pointer';
+});
+</script>
+
+<!-- Optional CSS for enhanced visual feedback -->
+<style>
+.logo {
+    transition: transform 0.1s ease;
+    user-select: none; /* Prevent text selection on double-click */
+}
+
+.logo:hover {
+    opacity: 0.8;
+}
+
+.logo:active {
+    transform: scale(0.95);
+}
+
+/* Optional: Add a subtle hint animation */
+@keyframes subtle-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.logo-hint {
+    animation: subtle-pulse 2s infinite;
+}
+</style>
 
     <!-- Hero Section -->
     <section class="hero">
