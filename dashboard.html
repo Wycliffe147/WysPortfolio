@@ -45,8 +45,7 @@
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid #ecf0f1;
-        }
-        // Add after: const usersRef = firebase.database().ref('activeUsers');
+            // Add after: const usersRef = firebase.database().ref('activeUsers');
 console.log('Attempting to connect to Firebase...');
 
 usersRef.on('value', (snapshot) => {
@@ -55,6 +54,7 @@ usersRef.on('value', (snapshot) => {
 }, (error) => {
     console.error('Firebase error:', error);
 });
+        }
         .user-table th {
             background: #3498db;
             color: white;
