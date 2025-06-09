@@ -25,6 +25,7 @@
         header {
             text-align: center;
             margin-bottom: 3rem;
+            position: relative;
         }
         header h1 {
             font-size: 2.5rem;
@@ -35,11 +36,13 @@
             border-radius: 12px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             padding: 2rem;
+            overflow-x: auto;
         }
         .user-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
+            min-width: 600px;
         }
         .user-table th, .user-table td {
             padding: 1rem;
@@ -133,6 +136,21 @@
             background: #95a5a6;
             cursor: not-allowed;
         }
+        .logout-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 0.5rem 1rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .logout-btn:hover {
+            background: #c0392b;
+        }
         .hidden {
             display: none !important;
         }
@@ -155,17 +173,146 @@
             padding: 2rem;
             color: #7f8c8d;
         }
+
+        /* Mobile Card Layout */
+        .user-cards {
+            display: none;
+        }
+        .user-card {
+            background: white;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .user-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .user-card-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+        .user-card-info {
+            flex: 1;
+        }
+        .user-card-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        .user-card-email {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        .user-card-time {
+            color: #95a5a6;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Mobile Styles */
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
             }
-            .user-table th, .user-table td {
-                padding: 0.5rem;
+            
+            header h1 {
+                font-size: 1.8rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            header p {
                 font-size: 0.9rem;
             }
-            .user-avatar {
-                width: 30px;
-                height: 30px;
+            
+            .logout-btn {
+                position: static;
+                margin-top: 1rem;
+                width: auto;
+                min-width: 100px;
+            }
+            
+            .dashboard {
+                padding: 1rem;
+            }
+            
+            /* Hide table on mobile */
+            .user-table {
+                display: none;
+            }
+            
+            /* Show cards on mobile */
+            .user-cards {
+                display: block;
+            }
+            
+            .auth-section {
+                padding: 2rem 1.5rem;
+                margin: 0 1rem;
+            }
+            
+            .auth-section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .back-to-home {
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .dashboard {
+                padding: 0.75rem;
+                border-radius: 8px;
+            }
+            
+            .auth-section {
+                margin: 0 0.5rem;
+                padding: 1.5rem 1rem;
+            }
+            
+            .user-card {
+                padding: 0.75rem;
+            }
+            
+            .user-card-avatar {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Landscape phone optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            header {
+                margin-bottom: 1.5rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .logout-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
             }
         }
     </style>
@@ -201,9 +348,10 @@
             <header>
                 <h1>Active Users Dashboard</h1>
                 <p>Track users currently signed in with Google accounts</p>
-                <button id="logoutBtn" style="position: absolute; top: 2rem; right: 2rem; padding: 0.5rem 1rem; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Logout</button>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
             </header>
             <div class="dashboard">
+                <!-- Desktop Table View -->
                 <table class="user-table">
                     <thead>
                         <tr>
@@ -215,6 +363,10 @@
                     </thead>
                     <tbody id="userTableBody"></tbody>
                 </table>
+
+                <!-- Mobile Card View -->
+                <div class="user-cards" id="userCards"></div>
+                
                 <div id="noUsersMessage" class="no-users" style="display: none;">No users are currently signed in.</div>
             </div>
         </div>
@@ -226,6 +378,7 @@
     <script src="firebase-config.js"></script>
     <script>
         const userTableBody = document.getElementById('userTableBody');
+        const userCards = document.getElementById('userCards');
         const noUsersMessage = document.getElementById('noUsersMessage');
         const authSection = document.getElementById('authSection');
         const dashboardSection = document.getElementById('dashboardSection');
@@ -356,9 +509,11 @@
             return sessionAge < maxAge;
         }
 
-        // Render users in table
+        // Render users in both table and card views
         function renderUsers() {
             userTableBody.innerHTML = '';
+            userCards.innerHTML = '';
+            
             if (users.length === 0) {
                 noUsersMessage.style.display = 'block';
                 return;
@@ -373,6 +528,7 @@
             });
             
             users.forEach(user => {
+                // Table row for desktop
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${user.name || 'N/A'}</td>
@@ -381,6 +537,21 @@
                     <td>${new Date(user.signInTime).toLocaleString()}</td>
                 `;
                 userTableBody.appendChild(row);
+
+                // Card for mobile
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `
+                    <div class="user-card-header">
+                        <img src="${user.picture || ''}" alt="Profile" class="user-card-avatar" onerror="this.src='https://via.placeholder.com/50'">
+                        <div class="user-card-info">
+                            <div class="user-card-name">${user.name || 'N/A'}</div>
+                            <div class="user-card-email">${user.email || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="user-card-time">Signed in: ${new Date(user.signInTime).toLocaleString()}</div>
+                `;
+                userCards.appendChild(card);
             });
         }
 
