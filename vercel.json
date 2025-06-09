@@ -1,0 +1,9 @@
+{
+    "version": "wys-portfolio",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
