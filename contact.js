@@ -1,6 +1,19 @@
 // Google Sign-In Configuration
 let currentUser = null;
 let isGoogleApiLoaded = false;
+let isFirebaseLoaded = false;
+
+// Check Firebase availability
+function checkFirebaseAvailability() {
+    if (typeof firebase !== 'undefined' && firebase.database) {
+        isFirebaseLoaded = true;
+        console.log('Firebase loaded successfully');
+        return true;
+    } else {
+        console.error('Firebase not loaded properly');
+        return false;
+    }
+}
 
 // Cookie management functions
 function setCookie(name, value, days = 7) {
@@ -138,8 +151,13 @@ function handleSignInResponse(response) {
         // Store auth info persistently
         storeUserSession(currentUser);
         
-        // Store in Firebase
-        storeUserInFirebase(currentUser);
+        // Store in Firebase with better error handling
+        storeUserInFirebase(currentUser).then(() => {
+            console.log('User stored in Firebase successfully');
+        }).catch(error => {
+            console.error('Failed to store user in Firebase:', error);
+            // Don't prevent sign-in if Firebase fails, just log the error
+        });
         
         // Show authenticated state
         showAuthenticatedView();
@@ -195,20 +213,41 @@ function storeUserSession(user) {
     }
 }
 
-// Store user in Firebase
+// Store user in Firebase with improved error handling
 function storeUserInFirebase(user) {
-    try {
-        const userId = btoa(user.email).replace(/=/g, ''); // Base64 encode email as ID
-        firebase.database().ref('activeUsers/' + userId).set({
-            name: user.name,
-            email: user.email,
-            picture: user.picture,
-            signInTime: user.signInTime
-        });
-        console.log('User stored in Firebase');
-    } catch (error) {
-        console.error('Error storing user in Firebase:', error);
-    }
+    return new Promise((resolve, reject) => {
+        try {
+            if (!checkFirebaseAvailability()) {
+                throw new Error('Firebase not available');
+            }
+            
+            const userId = btoa(user.email).replace(/=/g, ''); // Base64 encode email as ID
+            const userRef = firebase.database().ref('activeUsers/' + userId);
+            
+            const userData = {
+                name: user.name,
+                email: user.email,
+                picture: user.picture,
+                signInTime: user.signInTime
+            };
+            
+            console.log('Attempting to store user in Firebase:', userData);
+            
+            userRef.set(userData)
+                .then(() => {
+                    console.log('User successfully stored in Firebase');
+                    resolve();
+                })
+                .catch((error) => {
+                    console.error('Firebase set operation failed:', error);
+                    reject(error);
+                });
+                
+        } catch (error) {
+            console.error('Error in storeUserInFirebase:', error);
+            reject(error);
+        }
+    });
 }
 
 // Clear user session
@@ -218,9 +257,13 @@ function clearUserSession() {
         window.tempUserSession = null;
         
         // Remove from Firebase
-        if (currentUser) {
+        if (currentUser && checkFirebaseAvailability()) {
             const userId = btoa(currentUser.email).replace(/=/g, '');
-            firebase.database().ref('activeUsers/' + userId).remove();
+            firebase.database().ref('activeUsers/' + userId).remove().then(() => {
+                console.log('User removed from Firebase');
+            }).catch(error => {
+                console.error('Error removing user from Firebase:', error);
+            });
         }
         
         console.log('User session cleared');
@@ -238,7 +281,7 @@ function checkExistingAuth() {
         // First check memory
         if (window.tempUserSession && isSessionValid(window.tempUserSession)) {
             currentUser = window.tempUserSession;
-            storeUserInFirebase(currentUser);
+            storeUserInFirebase(currentUser).catch(e => console.error('Firebase store error:', e));
             showAuthenticatedView();
             console.log('Found valid session in memory');
             return;
@@ -249,7 +292,7 @@ function checkExistingAuth() {
         if (cookieSession && isSessionValid(cookieSession)) {
             currentUser = cookieSession;
             window.tempUserSession = cookieSession;
-            storeUserInFirebase(currentUser);
+            storeUserInFirebase(currentUser).catch(e => console.error('Firebase store error:', e));
             showAuthenticatedView();
             console.log('Found valid session in cookie');
             return;
@@ -515,7 +558,13 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing contact page...');
     
     showLoadingState();
-    checkExistingAuth();
+    
+    // Wait for Firebase to load before checking auth
+    setTimeout(() => {
+        checkFirebaseAvailability();
+        checkExistingAuth();
+    }, 500);
+    
     initializeLogout();
     initializeForm();
     initializeFormInteractions();
