@@ -832,4 +832,325 @@
                 csv += `Visitor,"${visitor.name}",,"${visitor.location}","${visitor.timestamp}","${visitor.status}"\n`;
             });
             
-            data.contacts.forEach(contact =>
+            data.contacts.forEach(contact => {
+                csv += `Contact,"${contact.name}","${contact.email}",,"${contact.timestamp}","${contact.status}"\n`;
+            });
+            
+            downloadFile(csv, 'dashboard-data.csv', 'text/csv');
+        }
+
+        function exportToJSON(data) {
+            const jsonData = JSON.stringify(data, null, 2);
+            downloadFile(jsonData, 'dashboard-data.json', 'application/json');
+        }
+
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function refreshData() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            const refreshBtn = document.querySelector('.refresh-btn');
+            
+            // Show loading state
+            refreshIcon.innerHTML = '<div class="loading"></div>';
+            refreshBtn.disabled = true;
+            
+            // Simulate data refresh
+            setTimeout(() => {
+                window.dashboardManager.updateDashboard();
+                
+                // Reset button state
+                refreshIcon.innerHTML = '🔄';
+                refreshBtn.disabled = false;
+                
+                // Show success message
+                showNotification('Data refreshed successfully!', 'success');
+            }, 1500);
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: ${type === 'success' ? '#4caf50' : '#2196f3'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Enhanced filtering functionality
+        function setupAdvancedFilters() {
+            const visitorSearch = document.getElementById('visitorSearch');
+            const locationFilter = document.getElementById('locationFilter');
+            const dateFilter = document.getElementById('dateFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            
+            // Populate location filter
+            function updateLocationFilter() {
+                const locations = [...new Set(window.dashboardManager.data.visitors.map(v => v.location))];
+                locationFilter.innerHTML = '<option value="">All Locations</option>';
+                locations.forEach(location => {
+                    locationFilter.innerHTML += `<option value="${location}">${location}</option>`;
+                });
+            }
+            
+            // Filter visitors
+            function filterVisitors() {
+                const searchTerm = visitorSearch.value.toLowerCase();
+                const selectedLocation = locationFilter.value;
+                const selectedDate = dateFilter.value;
+                const selectedStatus = statusFilter.value;
+                
+                let filteredVisitors = window.dashboardManager.data.visitors;
+                
+                if (searchTerm) {
+                    filteredVisitors = filteredVisitors.filter(visitor => 
+                        visitor.name.toLowerCase().includes(searchTerm) ||
+                        visitor.location.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                if (selectedLocation) {
+                    filteredVisitors = filteredVisitors.filter(visitor => 
+                        visitor.location === selectedLocation
+                    );
+                }
+                
+                if (selectedDate) {
+                    filteredVisitors = filteredVisitors.filter(visitor => 
+                        new Date(visitor.timestamp).toDateString() === new Date(selectedDate).toDateString()
+                    );
+                }
+                
+                if (selectedStatus) {
+                    filteredVisitors = filteredVisitors.filter(visitor => 
+                        visitor.status === selectedStatus
+                    );
+                }
+                
+                displayFilteredVisitors(filteredVisitors);
+            }
+            
+            function displayFilteredVisitors(visitors) {
+                const container = document.getElementById('visitorsList');
+                if (visitors.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔍</div>
+                            <p>No visitors found matching your criteria</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const html = visitors.slice(0, 10).map(visitor => `
+                    <div class="user-item">
+                        <div class="user-avatar">${visitor.name.charAt(0)}</div>
+                        <div class="user-info">
+                            <div class="user-name">${visitor.name}</div>
+                            <div class="user-details">
+                                ${visitor.location} • ${window.dashboardManager.formatTime(visitor.timestamp)}
+                            </div>
+                        </div>
+                        <div class="user-status status-${visitor.status}">${visitor.status}</div>
+                    </div>
+                `).join('');
+                
+                container.innerHTML = html;
+            }
+            
+            // Add event listeners
+            visitorSearch?.addEventListener('input', filterVisitors);
+            locationFilter?.addEventListener('change', filterVisitors);
+            dateFilter?.addEventListener('change', filterVisitors);
+            statusFilter?.addEventListener('change', filterVisitors);
+            
+            // Update location filter when data changes
+            setTimeout(updateLocationFilter, 1000);
+        }
+
+        // Contact form integration
+        function addContactFormIntegration() {
+            // Listen for contact form submissions from the main site
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'contact_form_submission') {
+                    window.dashboardManager.addContactSubmission(event.data.data);
+                }
+            });
+            
+            // Listen for page visits
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'page_visit') {
+                    window.dashboardManager.addVisitor(event.data.data);
+                }
+            });
+        }
+
+        // Chart functionality (placeholder for future implementation)
+        function initializeCharts() {
+            // Visitor chart placeholder
+            const visitorChart = document.getElementById('visitorChart');
+            const engagementChart = document.getElementById('engagementChart');
+            
+            // In a real implementation, you would use a charting library like Chart.js
+            // For now, we'll show placeholder content
+            setTimeout(() => {
+                const visitorData = window.dashboardManager.data.visitors;
+                const dailyVisits = {};
+                
+                visitorData.forEach(visitor => {
+                    const date = new Date(visitor.timestamp).toDateString();
+                    dailyVisits[date] = (dailyVisits[date] || 0) + 1;
+                });
+                
+                visitorChart.innerHTML = `
+                    <div style="text-align: center;">
+                        <h4>Daily Visitors (Last 7 Days)</h4>
+                        <div style="display: flex; justify-content: space-around; align-items: end; height: 150px; margin-top: 20px;">
+                            ${Object.entries(dailyVisits).slice(-7).map(([date, count]) => `
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="background: #667eea; width: 30px; height: ${count * 20}px; margin-bottom: 5px; border-radius: 4px;"></div>
+                                    <small>${new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}</small>
+                                    <small>${count}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                engagementChart.innerHTML = `
+                    <div style="text-align: center;">
+                        <h4>User Engagement</h4>
+                        <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+                            <div style="text-align: center;">
+                                <div style="width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(#667eea 0deg 216deg, #e0e0e0 216deg 360deg); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                    <div style="background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">60%</div>
+                                </div>
+                                <small>Return Visitors</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(#764ba2 0deg 144deg, #e0e0e0 144deg 360deg); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                    <div style="background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">40%</div>
+                                </div>
+                                <small>New Visitors</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize dashboard manager
+            window.dashboardManager = new DashboardManager();
+            
+            // Setup additional features
+            setupAdvancedFilters();
+            addContactFormIntegration();
+            initializeCharts();
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('Dashboard loaded successfully!', 'success');
+            }, 1000);
+        });
+
+        // Utility functions
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 'r':
+                        e.preventDefault();
+                        refreshData();
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        exportData('csv');
+                        break;
+                    case 'j':
+                        e.preventDefault();
+                        exportData('json');
+                        break;
+                }
+            }
+        });
+
+        // Auto-save functionality
+        setInterval(() => {
+            if (window.dashboardManager) {
+                window.dashboardManager.saveData();
+            }
+        }, 60000); // Save every minute
+
+        // Handle visibility change to pause/resume updates
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Pause updates when tab is not visible
+                console.log('Dashboard paused');
+            } else {
+                // Resume updates when tab becomes visible
+                console.log('Dashboard resumed');
+                if (window.dashboardManager) {
+                    window.dashboardManager.updateDashboard();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
