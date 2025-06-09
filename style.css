@@ -555,22 +555,37 @@ footer {
     }
 }
 
+/* Mobile Header Fixes - Replace the existing @media (max-width: 768px) section */
+
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
+        align-items: center;
         text-align: center;
-        gap: 8px;
+        gap: 15px;
+        padding: 10px 20px;
     }
     
     .logo {
         font-size: 20px;
+        margin: 0;
+        width: 100%;
+        text-align: center;
+    }
+    
+    nav {
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
     
     nav ul {
         margin: 0;
+        padding: 0;
         justify-content: center;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 20px;
+        width: 100%;
     }
     
     nav ul li {
@@ -579,19 +594,33 @@ footer {
     
     .search-container {
         margin: 0;
-        order: 3;
         width: 100%;
-        max-width: 280px;
-        margin: 0 auto;
+        max-width: 300px;
+        display: flex;
+        justify-content: center;
     }
     
     .search-input {
         width: 100%;
-        padding: 8px 12px 8px 35px;
+        max-width: 280px;
+        padding: 10px 15px 10px 40px;
+        margin: 0 auto;
     }
     
     .search-input:focus {
         width: 100%;
+        max-width: 280px;
+    }
+    
+    .search-icon {
+        left: 15px;
+    }
+    
+    .search-results {
+        width: 100%;
+        max-width: 280px;
+        left: 50%;
+        transform: translateX(-50%);
     }
     
     .about-content {
@@ -627,21 +656,42 @@ footer {
 }
 
 @media (max-width: 480px) {
+    .header-content {
+        padding: 8px 15px;
+        gap: 12px;
+    }
+    
     .logo {
         font-size: 18px;
     }
     
     nav ul {
-        gap: 10px;
+        gap: 15px;
+        justify-content: center;
+    }
+    
+    .search-container {
+        max-width: 250px;
     }
     
     .search-input {
-        padding: 6px 10px 6px 30px;
-        max-width: 250px;
+        max-width: 230px;
+        padding: 8px 12px 8px 35px;
+        font-size: 14px;
+    }
+    
+    .search-input:focus {
+        max-width: 230px;
     }
     
     .search-icon {
         left: 12px;
+        width: 14px;
+        height: 14px;
+    }
+    
+    .search-results {
+        max-width: 230px;
     }
     
     .scroll-nav-btn {
