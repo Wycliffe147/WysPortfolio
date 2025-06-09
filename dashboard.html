@@ -92,21 +92,59 @@
             background: white;
             border-radius: 12px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 0 auto;
         }
         .auth-section h2 {
             color: #3498db;
             margin-bottom: 1rem;
         }
-        .google-signin-container {
+        .password-form {
             margin: 2rem 0;
-            display: flex;
-            justify-content: center;
+        }
+        .password-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+        .password-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .login-btn:hover {
+            background: #2980b9;
+        }
+        .login-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
         }
         .hidden {
             display: none !important;
         }
         .error-message {
             background: #e74c3c;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .success-message {
+            background: #27ae60;
             color: white;
             padding: 1rem;
             border-radius: 8px;
@@ -138,13 +176,24 @@
         
         <!-- Authentication Section -->
         <div id="authSection" class="auth-section">
-            <h2>Dashboard Access Required</h2>
-            <p>Please sign in to view the active users dashboard.</p>
+            <h2>Dashboard Access</h2>
+            <p>Enter the dashboard password to continue.</p>
             <div id="errorMessage" class="error-message hidden"></div>
-            <div class="google-signin-container">
-                <div id="signinLoadingState" class="loading">Loading Google Sign-In...</div>
-                <div id="g_id_signin" class="hidden"></div>
-            </div>
+            <div id="successMessage" class="success-message hidden"></div>
+            
+            <form class="password-form" id="passwordForm">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="password-input" 
+                    placeholder="Enter dashboard password"
+                    required
+                    autocomplete="current-password"
+                >
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Access Dashboard
+                </button>
+            </form>
         </div>
 
         <!-- Dashboard Section -->
@@ -152,6 +201,7 @@
             <header>
                 <h1>Active Users Dashboard</h1>
                 <p>Track users currently signed in with Google accounts</p>
+                <button id="logoutBtn" style="position: absolute; top: 2rem; right: 2rem; padding: 0.5rem 1rem; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Logout</button>
             </header>
             <div class="dashboard">
                 <table class="user-table">
@@ -170,8 +220,7 @@
         </div>
     </div>
 
-    <!-- Google Sign-In API -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
@@ -181,108 +230,73 @@
         const authSection = document.getElementById('authSection');
         const dashboardSection = document.getElementById('dashboardSection');
         const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const passwordForm = document.getElementById('passwordForm');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
         
         let users = [];
         let sortField = 'signInTime';
         let sortDirection = -1;
-        let currentUser = null;
-        let isGoogleApiLoaded = false;
+        let isAuthenticated = false;
 
         // Show error message
         function showError(message) {
             errorMessage.textContent = message;
             errorMessage.classList.remove('hidden');
-            console.error('Dashboard Error:', message);
+            successMessage.classList.add('hidden');
         }
 
-        // Hide error message
-        function hideError() {
+        // Show success message
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.classList.remove('hidden');
             errorMessage.classList.add('hidden');
         }
 
-        // Initialize Google Sign-In
-        function initializeGoogleSignIn() {
-            console.log('Initializing Google Sign-In for dashboard...');
-            
+        // Hide messages
+        function hideMessages() {
+            errorMessage.classList.add('hidden');
+            successMessage.classList.add('hidden');
+        }
+
+        // Authenticate with password
+        async function authenticatePassword(password) {
             try {
-                if (typeof google === 'undefined' || !google.accounts) {
-                    throw new Error('Google Sign-In API not loaded');
-                }
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Checking...';
                 
-                google.accounts.id.initialize({
-                    client_id: '650247727271-mcufppu5e4u1ksdt8758lstfvnj9ki3i.apps.googleusercontent.com',
-                    callback: handleSignInResponse,
-                    auto_select: false,
-                    cancel_on_tap_outside: false
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password }),
                 });
-                
-                const signinContainer = document.getElementById('g_id_signin');
-                if (signinContainer) {
-                    google.accounts.id.renderButton(
-                        signinContainer,
-                        {
-                            theme: 'outline',
-                            size: 'large',
-                            type: 'standard',
-                            text: 'signin_with',
-                            shape: 'rectangular'
-                        }
-                    );
-                }
-                
-                isGoogleApiLoaded = true;
-                document.getElementById('signinLoadingState').classList.add('hidden');
-                document.getElementById('g_id_signin').classList.remove('hidden');
-                console.log('Google Sign-In initialized successfully');
-                hideError();
-                
-            } catch (error) {
-                console.error('Failed to initialize Google Sign-In:', error);
-                showError('Failed to load Google Sign-In. Please refresh the page and try again.');
-                document.getElementById('signinLoadingState').classList.add('hidden');
-            }
-        }
 
-        // Handle Google Sign-In response
-        function handleSignInResponse(response) {
-            console.log('Dashboard sign-in response received');
-            hideError();
-            
-            try {
-                if (!response.credential) {
-                    throw new Error('No credential received from Google');
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    isAuthenticated = true;
+                    showSuccess('Authentication successful! Loading dashboard...');
+                    setTimeout(() => {
+                        showDashboard();
+                        loadUsers();
+                    }, 1000);
+                } else {
+                    showError(data.error || 'Invalid password');
+                    passwordInput.value = '';
+                    passwordInput.focus();
                 }
-                
-                const userInfo = parseJwt(response.credential);
-                currentUser = {
-                    name: userInfo.name,
-                    email: userInfo.email,
-                    picture: userInfo.picture,
-                    token: response.credential
-                };
-                
-                console.log('User authenticated successfully:', currentUser.name);
-                showDashboard();
-                loadUsers();
-                
             } catch (error) {
-                console.error('Error handling sign-in:', error);
+                console.error('Auth error:', error);
                 showError('Authentication failed. Please try again.');
-            }
-        }
-
-        // Parse JWT token
-        function parseJwt(token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (error) {
-                console.error('Error parsing JWT:', error);
-                throw new Error('Invalid token format');
+                passwordInput.value = '';
+                passwordInput.focus();
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Access Dashboard';
             }
         }
 
@@ -292,13 +306,23 @@
             dashboardSection.classList.remove('hidden');
         }
 
+        // Show login
+        function showLogin() {
+            authSection.classList.remove('hidden');
+            dashboardSection.classList.add('hidden');
+            isAuthenticated = false;
+            passwordInput.value = '';
+            hideMessages();
+        }
+
         // Load users from Firebase
         function loadUsers() {
+            if (!isAuthenticated) return;
+            
             console.log('Loading users from Firebase...');
             const usersRef = firebase.database().ref('activeUsers');
             
             usersRef.on('value', (snapshot) => {
-                console.log('Firebase snapshot received:', snapshot.val());
                 users = [];
                 
                 snapshot.forEach((childSnapshot) => {
@@ -360,6 +384,20 @@
             });
         }
 
+        // Event listeners
+        passwordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = passwordInput.value.trim();
+            if (password) {
+                hideMessages();
+                authenticatePassword(password);
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            showLogin();
+        });
+
         // Handle sorting
         document.querySelectorAll('.sort-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -378,16 +416,9 @@
             });
         });
 
-        // Initialize on page load
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing dashboard...');
-        });
-
-        window.addEventListener('load', function() {
-            console.log('Window loaded, initializing Google Sign-In...');
-            setTimeout(() => {
-                initializeGoogleSignIn();
-            }, 1000);
+            passwordInput.focus();
         });
     </script>
 </body>
