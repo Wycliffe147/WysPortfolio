@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Wy's Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s ease;
+        }
+
+        .user-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .user-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background: #e8f5e8;
+            color: #2d7d32;
+        }
+
+        .status-offline {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            margin-bottom: 1rem;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #666;
+            margin-left: auto;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-stats {
+                justify-content: center;
+            }
+
+            .filter-section {
+                flex-direction: column;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div>
+                <h1 class="dashboard-title">Analytics Dashboard</h1>
+                <p>User Data & Site Analytics</p>
+            </div>
+            <div class="dashboard-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalVisitors">0</div>
+                    <div class="stat-label">Total Visitors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="todayVisitors">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="contactSubmissions">0</div>
+                    <div class="stat-label">Contact Forms</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="margin-bottom: 2rem;">
+            <button class="export-btn" onclick="exportData('csv')">Export CSV</button>
+            <button class="export-btn" onclick="exportData('json')">Export JSON</button>
+            <button class="refresh-btn" onclick="refreshData()">
+                <span id="refreshIcon">🔄</span> Refresh Data
+            </button>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Visitor Analytics Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                            <path d="M16 4v4h4V4h-4zM4 14h4v-4H4v4zm0 6h4v-4H4v4zM10 4v6h10V4H10zm6 16v-6H10v4h4v2h2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Visitor Analytics</h3>
+                </div>
+                <div class="chart-container" id="visitorChart">
+                    <div>📊 Visitor trends will appear here</div>
+                </div>
+            </div>
+
+            <!-- Recent Visitors Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Recent Visitors</h3>
+                </div>
+                <div class="filter-section">
+                    <input type="text" class="filter-input" placeholder="Search visitors..." id="visitorSearch">
+                    <select class="filter-input" id="locationFilter">
+                        <option value="">All Locations</option>
+                    </select>
+                </div>
+                <div class="user-list" id="visitorsList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <p>No visitor data available yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form Submissions -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Contact Submissions</h3>
+                </div>
+                <div class="filter-section">
+                    <input type="date" class="filter-input" id="dateFilter">
+                    <select class="filter-input" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="new">New</option>
+                        <option value="read">Read</option>
+                        <option value="replied">Replied</option>
+                    </select>
+                </div>
+                <div class="user-list" id="contactList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📧</div>
+                        <p>No contact submissions yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Site Activity -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                            <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Recent Activity</h3>
+                </div>
+                <div id="activityFeed">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📈</div>
+                        <p>Activity feed will appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Performance -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Page Performance</h3>
+                </div>
+                <table class="data-table" id="pagePerformanceTable">
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>Views</th>
+                            <th>Avg. Time</th>
+                            <th>Bounce Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem; color: #666;">
+                                Loading performance data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- User Engagement -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">User Engagement</h3>
+                </div>
+                <div class="chart-container" id="engagementChart">
+                    <div>📊 Engagement metrics will appear here</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard data management
+        class DashboardManager {
+            constructor() {
+                this.data = {
+                    visitors: [],
+                    contacts: [],
+                    pageViews: [],
+                    activities: []
+                };
+                this.init();
+            }
+
+            init() {
+                this.loadStoredData();
+                this.setupEventListeners();
+                this.startRealTimeUpdates();
+                this.generateSampleData(); // For demo purposes
+            }
+
+            loadStoredData() {
+                try {
+                    const storedData = JSON.parse(localStorage.getItem('dashboardData') || '{}');
+                    this.data = { ...this.data, ...storedData };
+                } catch (error) {
+                    console.error('Error loading stored data:', error);
+                }
+            }
+
+            saveData() {
+                try {
+                    localStorage.setItem('dashboardData', JSON.stringify(this.data));
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                }
+            }
+
+            generateSampleData() {
+                // Generate sample visitor data
+                const sampleVisitors = [
+                    {
+                        id: 1,
+                        name: 'Anonymous User',
+                        location: 'Lilongwe, MW',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+                        pages: ['/', '/projects'],
+                        status: 'online'
+                    },
+                    {
+                        id: 2,
+                        name: 'Visitor #2',
+                        location: 'Blantyre, MW',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+                        pages: ['/', '/about'],
+                        status: 'offline'
+                    },
+                    {
+                        id: 3,
+                        name: 'Visitor #3',
+                        location: 'Mzuzu, MW',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
+                        pages: ['/'],
+                        status: 'offline'
+                    }
+                ];
+
+                // Generate sample contact submissions
+                const sampleContacts = [
+                    {
+                        id: 1,
+                        name: 'John Doe',
+                        email: 'john@example.com',
+                        message: 'Great portfolio! I\'d like to discuss a project.',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1).toISOString(),
+                        status: 'new'
+                    },
+                    {
+                        id: 2,
+                        name: 'Jane Smith',
+                        email: 'jane@example.com',
+                        message: 'Love your report generator tool. Can you customize it?',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
+                        status: 'read'
+                    }
+                ];
+
+                // Generate sample activities
+                const sampleActivities = [
+                    {
+                        type: 'page_view',
+                        description: 'User viewed Projects page',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString()
+                    },
+                    {
+                        type: 'form_submission',
+                        description: 'New contact form submitted',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1).toISOString()
+                    },
+                    {
+                        type: 'download',
+                        description: 'Report Generator Tool downloaded',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString()
+                    }
+                ];
+
+                // Only add sample data if no data exists
+                if (this.data.visitors.length === 0) {
+                    this.data.visitors = sampleVisitors;
+                }
+                if (this.data.contacts.length === 0) {
+                    this.data.contacts = sampleContacts;
+                }
+                if (this.data.activities.length === 0) {
+                    this.data.activities = sampleActivities;
+                }
+
+                this.updateDashboard();
+            }
+
+            addVisitor(visitorData) {
+                const visitor = {
+                    id: Date.now(),
+                    timestamp: new Date().toISOString(),
+                    ...visitorData
+                };
+                this.data.visitors.unshift(visitor);
+                this.saveData();
+                this.updateDashboard();
+            }
+
+            addContactSubmission(contactData) {
+                const contact = {
+                    id: Date.now(),
+                    timestamp: new Date().toISOString(),
+                    status: 'new',
+                    ...contactData
+                };
+                this.data.contacts.unshift(contact);
+                this.addActivity('form_submission', `New contact from ${contact.name}`);
+                this.saveData();
+                this.updateDashboard();
+            }
+
+            addActivity(type, description) {
+                const activity = {
+                    type,
+                    description,
+                    timestamp: new Date().toISOString()
+                };
+                this.data.activities.unshift(activity);
+                if (this.data.activities.length > 50) {
+                    this.data.activities = this.data.activities.slice(0, 50);
+                }
+                this.saveData();
+            }
+
+            updateDashboard() {
+                this.updateStats();
+                this.updateVisitorsList();
+                this.updateContactsList();
+                this.updateActivityFeed();
+                this.updatePagePerformance();
+            }
+
+            updateStats() {
+                const today = new Date().toDateString();
+                const todayVisitors = this.data.visitors.filter(v => 
+                    new Date(v.timestamp).toDateString() === today
+                ).length;
+
+                document.getElementById('totalVisitors').textContent = this.data.visitors.length;
+                document.getElementById('todayVisitors').textContent = todayVisitors;
+                document.getElementById('contactSubmissions').textContent = this.data.contacts.length;
+            }
+
+            updateVisitorsList() {
+                const container = document.getElementById('visitorsList');
+                if (this.data.visitors.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <p>No visitor data available yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = this.data.visitors.slice(0, 10).map(visitor => `
+                    <div class="user-item">
+                        <div class="user-avatar">${visitor.name.charAt(0)}</div>
+                        <div class="user-info">
+                            <div class="user-name">${visitor.name}</div>
+                            <div class="user-details">
+                                ${visitor.location} • ${this.formatTime(visitor.timestamp)}
+                            </div>
+                        </div>
+                        <div class="user-status status-${visitor.status}">${visitor.status}</div>
+                    </div>
+                `).join('');
+
+                container.innerHTML = html;
+            }
+
+            updateContactsList() {
+                const container = document.getElementById('contactList');
+                if (this.data.contacts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📧</div>
+                            <p>No contact submissions yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = this.data.contacts.slice(0, 10).map(contact => `
+                    <div class="user-item">
+                        <div class="user-avatar">${contact.name.charAt(0)}</div>
+                        <div class="user-info">
+                            <div class="user-name">${contact.name}</div>
+                            <div class="user-details">
+                                ${contact.email} • ${this.formatTime(contact.timestamp)}
+                            </div>
+                        </div>
+                        <div class="user-status status-${contact.status === 'new' ? 'online' : 'offline'}">
+                            ${contact.status}
+                        </div>
+                    </div>
+                `).join('');
+
+                container.innerHTML = html;
+            }
+
+            updateActivityFeed() {
+                const container = document.getElementById('activityFeed');
+                if (this.data.activities.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📈</div>
+                            <p>Activity feed will appear here</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = this.data.activities.slice(0, 10).map(activity => `
+                    <div class="activity-item">
+                        <div>${activity.description}</div>
+                        <div class="activity-time">${this.formatTime(activity.timestamp)}</div>
+                    </div>
+                `).join('');
+
+                container.innerHTML = html;
+            }
+
+            updatePagePerformance() {
+                const tbody = document.querySelector('#pagePerformanceTable tbody');
+                const pageData = [
+                    { page: '/', views: 156, avgTime: '2:34', bounceRate: '45%' },
+                    { page: '/projects', views: 89, avgTime: '3:12', bounceRate: '32%' },
+                    { page: '/about', views: 67, avgTime: '1:45', bounceRate: '28%' },
+                    { page: '/contact', views: 23, avgTime: '4:56', bounceRate: '15%' }
+                ];
+
+                const html = pageData.map(data => `
+                    <tr>
+                        <td>${data.page}</td>
+                        <td>${data.views}</td>
+                        <td>${data.avgTime}</td>
+                        <td>${data.bounceRate}</td>
+                    </tr>
+                `).join('');
+
+                tbody.innerHTML = html;
+            }
+
+            formatTime(timestamp) {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diff = now - date;
+
+                if (diff < 60000) return 'Just now';
+                if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+                if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+                return date.toLocaleDateString();
+            }
+
+            setupEventListeners() {
+                // Search functionality
+                document.getElementById('visitorSearch')?.addEventListener('input', (e) => {
+                    // Implement search filtering
+                });
+
+                // Filter functionality
+                document.getElementById('locationFilter')?.addEventListener('change', (e) => {
+                    // Implement location filtering
+                });
+            }
+
+            startRealTimeUpdates() {
+                // Simulate real-time updates every 30 seconds
+                setInterval(() => {
+                    if (Math.random() > 0.7) {
+                        this.simulateNewVisitor();
+                    }
+                }, 30000);
+            }
+
+            simulateNewVisitor() {
+                const locations = ['Lilongwe, MW', 'Blantyre, MW', 'Mzuzu, MW', 'Zomba, MW'];
+                const pages = ['/', '/projects', '/about', '/tutorials'];
+                
+                this.addVisitor({
+                    name: `Visitor #${this.data.visitors.length + 1}`,
+                    location: locations[Math.floor(Math.random() * locations.length)],
+                    pages: [pages[Math.floor(Math.random() * pages.length)]],
+                    status: Math.random() > 0.5 ? 'online' : 'offline'
+                });
+            }
+        }
+
+        // Export functionality
+        function exportData(format) {
+            const dashboard = window.dashboardManager;
+            const data = dashboard.data;
+            
+            if (format === 'csv') {
+                exportToCSV(data);
+            } else if (format === 'json') {
+                exportToJSON(data);
+            }
+        }
+
+        function exportToCSV(data) {
+            let csv = 'Type,Name,Email,Location,Timestamp,Status\n';
+            
+            data.visitors.forEach(visitor => {
+                csv += `Visitor,"${visitor.name}",,"${visitor.location}","${visitor.timestamp}","${visitor.status}"\n`;
+            });
+            
+            data.contacts.forEach(contact =>
