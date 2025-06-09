@@ -46,6 +46,15 @@
             text-align: left;
             border-bottom: 1px solid #ecf0f1;
         }
+        // Add after: const usersRef = firebase.database().ref('activeUsers');
+console.log('Attempting to connect to Firebase...');
+
+usersRef.on('value', (snapshot) => {
+    console.log('Firebase snapshot received:', snapshot.val());
+    // ... rest of your existing code
+}, (error) => {
+    console.error('Firebase error:', error);
+});
         .user-table th {
             background: #3498db;
             color: white;
