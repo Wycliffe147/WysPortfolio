@@ -173,7 +173,6 @@
     <!-- Google Sign-In API -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script>
@@ -262,18 +261,9 @@
                     token: response.credential
                 };
                 
-                // Sign in to Firebase with the Google token
-                const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
-                firebase.auth().signInWithCredential(credential)
-                    .then(() => {
-                        console.log('Firebase authentication successful');
-                        showDashboard();
-                        loadUsers();
-                    })
-                    .catch((error) => {
-                        console.error('Firebase authentication failed:', error);
-                        showError('Authentication failed. Please try again.');
-                    });
+                console.log('User authenticated successfully:', currentUser.name);
+                showDashboard();
+                loadUsers();
                 
             } catch (error) {
                 console.error('Error handling sign-in:', error);
