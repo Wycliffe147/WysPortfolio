@@ -31,6 +31,57 @@
             font-size: 2.5rem;
             color: #3498db;
         }
+        
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 12px;
+            padding: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .tab-btn {
+            flex: 1;
+            max-width: 200px;
+            padding: 1rem 2rem;
+            border: none;
+            background: transparent;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        .tab-btn:hover:not(.active) {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+        .tab-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            min-width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .tab-count.zero {
+            display: none;
+        }
+        
         .dashboard {
             background: white;
             border-radius: 12px;
@@ -42,7 +93,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
-            min-width: 600px;
+            min-width: 700px;
         }
         .user-table th, .user-table td {
             padding: 1rem;
@@ -89,6 +140,30 @@
         .back-to-home:hover {
             color: #2980b9;
         }
+        
+        /* Status indicators */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-active {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        .status-offline {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+        
+        /* Session duration styling */
+        .session-duration {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
         .auth-section {
             text-align: center;
             padding: 3rem 2rem;
@@ -211,10 +286,17 @@
             font-size: 0.9rem;
             word-break: break-all;
         }
+        .user-card-meta {
+            margin-top: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
         .user-card-time {
             color: #95a5a6;
             font-size: 0.8rem;
-            margin-top: 0.5rem;
         }
 
         /* Mobile Styles */
@@ -241,6 +323,16 @@
             
             .dashboard {
                 padding: 1rem;
+            }
+            
+            .tab-navigation {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .tab-btn {
+                max-width: none;
+                padding: 0.75rem 1rem;
             }
             
             /* Hide table on mobile */
@@ -346,28 +438,69 @@
         <!-- Dashboard Section -->
         <div id="dashboardSection" class="hidden">
             <header>
-                <h1>Active Users Dashboard</h1>
-                <p>Track users currently signed in with Google accounts</p>
+                <h1>User Activity Dashboard</h1>
+                <p>Track user sign-ins and activity across your portfolio</p>
                 <button id="logoutBtn" class="logout-btn">Logout</button>
             </header>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="active" id="activeTab">
+                    Active Users
+                    <span class="tab-count zero" id="activeCount">0</span>
+                </button>
+                <button class="tab-btn" data-tab="history" id="historyTab">
+                    Sign-in History
+                    <span class="tab-count zero" id="historyCount">0</span>
+                </button>
+            </div>
+            
             <div class="dashboard">
-                <!-- Desktop Table View -->
-                <table class="user-table">
-                    <thead>
-                        <tr>
-                            <th>Name <button class="sort-btn" data-sort="name"><i class="fas fa-sort"></i></button></th>
-                            <th>Email <button class="sort-btn" data-sort="email"><i class="fas fa-sort"></i></button></th>
-                            <th>Profile Picture</th>
-                            <th>Sign-In Time <button class="sort-btn" data-sort="signInTime"><i class="fas fa-sort"></i></button></th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody"></tbody>
-                </table>
+                <!-- Active Users Tab -->
+                <div id="activeUsersContent" class="tab-content">
+                    <!-- Desktop Table View -->
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Name <button class="sort-btn" data-sort="name"><i class="fas fa-sort"></i></button></th>
+                                <th>Email <button class="sort-btn" data-sort="email"><i class="fas fa-sort"></i></button></th>
+                                <th>Profile Picture</th>
+                                <th>Status</th>
+                                <th>Sign-In Time <button class="sort-btn" data-sort="signInTime"><i class="fas fa-sort"></i></button></th>
+                            </tr>
+                        </thead>
+                        <tbody id="activeUserTableBody"></tbody>
+                    </table>
 
-                <!-- Mobile Card View -->
-                <div class="user-cards" id="userCards"></div>
+                    <!-- Mobile Card View -->
+                    <div class="user-cards" id="activeUserCards"></div>
+                    
+                    <div id="noActiveUsersMessage" class="no-users" style="display: none;">No users are currently signed in.</div>
+                </div>
                 
-                <div id="noUsersMessage" class="no-users" style="display: none;">No users are currently signed in.</div>
+                <!-- History Tab -->
+                <div id="historyContent" class="tab-content hidden">
+                    <!-- Desktop Table View -->
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Name <button class="sort-btn" data-sort="name"><i class="fas fa-sort"></i></button></th>
+                                <th>Email <button class="sort-btn" data-sort="email"><i class="fas fa-sort"></i></button></th>
+                                <th>Profile Picture</th>
+                                <th>Status</th>
+                                <th>Sign-In Time <button class="sort-btn" data-sort="signInTime"><i class="fas fa-sort"></i></button></th>
+                                <th>Sign-Out Time <button class="sort-btn" data-sort="signOutTime"><i class="fas fa-sort"></i></button></th>
+                                <th>Session Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody"></tbody>
+                    </table>
+
+                    <!-- Mobile Card View -->
+                    <div class="user-cards" id="historyCards"></div>
+                    
+                    <div id="noHistoryMessage" class="no-users" style="display: none;">No user history available.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -377,9 +510,13 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script>
-        const userTableBody = document.getElementById('userTableBody');
-        const userCards = document.getElementById('userCards');
-        const noUsersMessage = document.getElementById('noUsersMessage');
+        // DOM Elements
+        const activeUserTableBody = document.getElementById('activeUserTableBody');
+        const historyTableBody = document.getElementById('historyTableBody');
+        const activeUserCards = document.getElementById('activeUserCards');
+        const historyCards = document.getElementById('historyCards');
+        const noActiveUsersMessage = document.getElementById('noActiveUsersMessage');
+        const noHistoryMessage = document.getElementById('noHistoryMessage');
         const authSection = document.getElementById('authSection');
         const dashboardSection = document.getElementById('dashboardSection');
         const errorMessage = document.getElementById('errorMessage');
@@ -389,7 +526,18 @@
         const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         
-        let users = [];
+        // Tab elements
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const activeTab = document.getElementById('activeTab');
+        const historyTab = document.getElementById('historyTab');
+        const activeUsersContent = document.getElementById('activeUsersContent');
+        const historyContent = document.getElementById('historyContent');
+        const activeCount = document.getElementById('activeCount');
+        const historyCount = document.getElementById('historyCount');
+        
+        let activeUsers = [];
+        let userHistory = [];
+        let currentTab = 'active';
         let sortField = 'signInTime';
         let sortDirection = -1;
         let isAuthenticated = false;
@@ -420,25 +568,17 @@
                 loginBtn.disabled = true;
                 loginBtn.textContent = 'Checking...';
                 
-                const response = await fetch('/api/auth', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ password }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
+                // For demo purposes, using a simple password check
+                // Replace this with your actual authentication logic
+                if (password === 'your-dashboard-password') {
                     isAuthenticated = true;
                     showSuccess('Authentication successful! Loading dashboard...');
                     setTimeout(() => {
                         showDashboard();
-                        loadUsers();
+                        loadData();
                     }, 1000);
                 } else {
-                    showError(data.error || 'Invalid password');
+                    showError('Invalid password');
                     passwordInput.value = '';
                     passwordInput.focus();
                 }
@@ -468,36 +608,114 @@
             hideMessages();
         }
 
-        // Load users from Firebase
-        function loadUsers() {
+        // Switch tabs
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab buttons
+            tabBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tabName);
+            });
+            
+            // Update content visibility
+            activeUsersContent.classList.toggle('hidden', tabName !== 'active');
+            historyContent.classList.toggle('hidden', tabName !== 'history');
+            
+            // Reset sort for new tab
+            sortField = 'signInTime';
+            sortDirection = -1;
+            updateSortButtons();
+        }
+
+        // Load all data from Firebase
+        function loadData() {
             if (!isAuthenticated) return;
             
-            console.log('Loading users from Firebase...');
-            const usersRef = firebase.database().ref('activeUsers');
+            console.log('Loading data from Firebase...');
+            loadActiveUsers();
+            loadUserHistory();
+        }
+
+        // Load active users from Firebase
+        function loadActiveUsers() {
+            const activeUsersRef = firebase.database().ref('activeUsers');
             
-            usersRef.on('value', (snapshot) => {
-                users = [];
+            activeUsersRef.on('value', (snapshot) => {
+                activeUsers = [];
                 
                 snapshot.forEach((childSnapshot) => {
                     const user = childSnapshot.val();
                     if (isSessionValid(user)) {
-                        users.push({
+                        activeUsers.push({
                             id: childSnapshot.key,
                             name: user.name,
                             email: user.email,
                             picture: user.picture,
-                            signInTime: user.signInTime
+                            signInTime: user.signInTime,
+                            status: 'active'
                         });
                     } else {
-                        // Remove expired sessions
+                        // Move expired sessions to history before removing
+                        moveToHistory(user);
                         childSnapshot.ref.remove();
                     }
                 });
                 
-                renderUsers();
+                updateTabCounts();
+                if (currentTab === 'active') {
+                    renderActiveUsers();
+                }
             }, (error) => {
-                console.error('Firebase error:', error);
-                showError('Failed to load user data: ' + error.message);
+                console.error('Firebase error loading active users:', error);
+                showError('Failed to load active user data: ' + error.message);
+            });
+        }
+
+        // Load user history from Firebase
+        function loadUserHistory() {
+            const historyRef = firebase.database().ref('userHistory');
+            
+            historyRef.on('value', (snapshot) => {
+                userHistory = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    const user = childSnapshot.val();
+                    userHistory.push({
+                        id: childSnapshot.key,
+                        name: user.name,
+                        email: user.email,
+                        picture: user.picture,
+                        signInTime: user.signInTime,
+                        signOutTime: user.signOutTime,
+                        sessionDuration: user.sessionDuration,
+                        status: user.signOutTime ? 'offline' : 'active'
+                    });
+                });
+                
+                updateTabCounts();
+                if (currentTab === 'history') {
+                    renderUserHistory();
+                }
+            }, (error) => {
+                console.error('Firebase error loading user history:', error);
+                showError('Failed to load user history: ' + error.message);
+            });
+        }
+
+        // Move user to history
+        function moveToHistory(user) {
+            if (!user || !user.signInTime) return;
+            
+            const historyRef = firebase.database().ref('userHistory');
+            const sessionDuration = Date.now() - user.signInTime;
+            
+            historyRef.push({
+                name: user.name,
+                email: user.email,
+                picture: user.picture,
+                signInTime: user.signInTime,
+                signOutTime: Date.now(),
+                sessionDuration: sessionDuration
             });
         }
 
@@ -509,34 +727,59 @@
             return sessionAge < maxAge;
         }
 
-        // Render users in both table and card views
-        function renderUsers() {
-            userTableBody.innerHTML = '';
-            userCards.innerHTML = '';
+        // Update tab counts
+        function updateTabCounts() {
+            activeCount.textContent = activeUsers.length;
+            activeCount.classList.toggle('zero', activeUsers.length === 0);
             
-            if (users.length === 0) {
-                noUsersMessage.style.display = 'block';
+            historyCount.textContent = userHistory.length;
+            historyCount.classList.toggle('zero', userHistory.length === 0);
+        }
+
+        // Format session duration
+        function formatDuration(milliseconds) {
+            if (!milliseconds) return 'N/A';
+            
+            const seconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days}d ${hours % 24}h`;
+            if (hours > 0) return `${hours}h ${minutes % 60}m`;
+            if (minutes > 0) return `${minutes}m`;
+            return `${seconds}s`;
+        }
+
+        // Render active users
+        function renderActiveUsers() {
+            activeUserTableBody.innerHTML = '';
+            activeUserCards.innerHTML = '';
+            
+            if (activeUsers.length === 0) {
+                noActiveUsersMessage.style.display = 'block';
                 return;
             }
-            noUsersMessage.style.display = 'none';
+            noActiveUsersMessage.style.display = 'none';
             
-            users.sort((a, b) => {
+            const sortedUsers = [...activeUsers].sort((a, b) => {
                 if (sortField === 'signInTime') {
                     return (a[sortField] - b[sortField]) * sortDirection;
                 }
                 return a[sortField].localeCompare(b[sortField]) * sortDirection;
             });
             
-            users.forEach(user => {
+            sortedUsers.forEach(user => {
                 // Table row for desktop
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${user.name || 'N/A'}</td>
                     <td>${user.email || 'N/A'}</td>
                     <td><img src="${user.picture || ''}" alt="Profile" class="user-avatar" onerror="this.src='https://via.placeholder.com/40'"></td>
+                    <td><span class="status-badge status-active">Active</span></td>
                     <td>${new Date(user.signInTime).toLocaleString()}</td>
                 `;
-                userTableBody.appendChild(row);
+                activeUserTableBody.appendChild(row);
 
                 // Card for mobile
                 const card = document.createElement('div');
@@ -549,9 +792,85 @@
                             <div class="user-card-email">${user.email || 'N/A'}</div>
                         </div>
                     </div>
-                    <div class="user-card-time">Signed in: ${new Date(user.signInTime).toLocaleString()}</div>
+                    <div class="user-card-meta">
+                        <span class="status-badge status-active">Active</span>
+                        <div class="user-card-time">Signed in: ${new Date(user.signInTime).toLocaleString()}</div>
+                    </div>
                 `;
-                userCards.appendChild(card);
+                activeUserCards.appendChild(card);
+            });
+        }
+
+        // Render user history
+        function renderUserHistory() {
+            historyTableBody.innerHTML = '';
+            historyCards.innerHTML = '';
+            
+            if (userHistory.length === 0) {
+                noHistoryMessage.style.display = 'block';
+                return;
+            }
+            noHistoryMessage.style.display = 'none';
+            
+            const sortedHistory = [...userHistory].sort((a, b) => {
+                if (sortField === 'signInTime' || sortField === 'signOutTime') {
+                    const aVal = a[sortField] || 0;
+                    const bVal = b[sortField] || 0;
+                    return (aVal - bVal) * sortDirection;
+                }
+                return a[sortField].localeCompare(b[sortField]) * sortDirection;
+            });
+            
+            sortedHistory.forEach(user => {
+                const statusClass = user.status === 'active' ? 'status-active' : 'status-offline';
+                const statusText = user.status === 'active' ? 'Active' : 'Signed Out';
+                
+                // Table row for desktop
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name || 'N/A'}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td><img src="${user.picture || ''}" alt="Profile" class="user-avatar" onerror="this.src='https://via.placeholder.com/40'"></td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${new Date(user.signInTime).toLocaleString()}</td>
+                    <td>${user.signOutTime ? new Date(user.signOutTime).toLocaleString() : 'Still active'}</td>
+                    <td><span class="session-duration">${formatDuration(user.sessionDuration)}</span></td>
+                `;
+                historyTableBody.appendChild(row);
+
+                // Card for mobile
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `
+                    <div class="user-card-header">
+                        <img src="${user.picture || ''}" alt="Profile" class="user-card-avatar" onerror="this.src='https://via.placeholder.com/50'">
+                        <div class="user-card-info">
+                            <div class="user-card-name">${user.name || 'N/A'}</div>
+                            <div class="user-card-email">${user.email || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="user-card-meta">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <div class="user-card-time">
+                            <div>Signed in: ${new Date(user.signInTime).toLocaleString()}</div>
+                            ${user.signOutTime ? `<div>Signed out: ${new Date(user.signOutTime).toLocaleString()}</div>` : ''}
+                            ${user.sessionDuration ? `<div>Duration: ${formatDuration(user.sessionDuration)}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                historyCards.appendChild(card);
+            });
+        }
+
+        // Update sort buttons visual state
+        function updateSortButtons() {
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                const icon = btn.querySelector('i');
+                if (btn.dataset.sort === sortField) {
+                    icon.className = `fas fa-sort-${sortDirection === 1 ? 'up' : 'down'}`;
+                } else {
+                    icon.className = 'fas fa-sort';
+                }
             });
         }
 
@@ -569,6 +888,13 @@
             showLogin();
         });
 
+        // Tab switching
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTab(btn.dataset.tab);
+            });
+        });
+
         // Handle sorting
         document.querySelectorAll('.sort-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -579,17 +905,76 @@
                     sortField = newSortField;
                     sortDirection = 1;
                 }
-                btn.querySelector('i').className = `fas fa-sort-${sortDirection === 1 ? 'up' : 'down'}`;
-                document.querySelectorAll('.sort-btn').forEach(b => {
-                    if (b !== btn) b.querySelector('i').className = 'fas fa-sort';
-                });
-                renderUsers();
+                updateSortButtons();
+                
+                // Re-render current tab
+                if (currentTab === 'active') {
+                    renderActiveUsers();
+                } else {
+                    renderUserHistory();
+                }
             });
         });
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             passwordInput.focus();
+            
+            // Check for authentication state persistence (optional)
+            const savedAuth = sessionStorage.getItem('dashboardAuth');
+            if (savedAuth === 'true') {
+                isAuthenticated = true;
+                showDashboard();
+                loadData();
+            }
+        });
+
+        // Save auth state when authenticated
+        function saveAuthState() {
+            if (isAuthenticated) {
+                sessionStorage.setItem('dashboardAuth', 'true');
+            } else {
+                sessionStorage.removeItem('dashboardAuth');
+            }
+        }
+
+        // Update the authenticatePassword function to save state
+        const originalAuthenticatePassword = authenticatePassword;
+        authenticatePassword = async function(password) {
+            await originalAuthenticatePassword(password);
+            if (isAuthenticated) {
+                saveAuthState();
+            }
+        };
+
+        // Update the showLogin function to clear state
+        const originalShowLogin = showLogin;
+        showLogin = function() {
+            originalShowLogin();
+            saveAuthState();
+        };
+
+        // Clean up expired sessions periodically
+        setInterval(() => {
+            if (isAuthenticated) {
+                const activeUsersRef = firebase.database().ref('activeUsers');
+                activeUsersRef.once('value', (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const user = childSnapshot.val();
+                        if (!isSessionValid(user)) {
+                            moveToHistory(user);
+                            childSnapshot.ref.remove();
+                        }
+                    });
+                });
+            }
+        }, 60000); // Check every minute
+
+        // Handle visibility change to refresh data when tab becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && isAuthenticated) {
+                loadData();
+            }
         });
     </script>
 </body>
