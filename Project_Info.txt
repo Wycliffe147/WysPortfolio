@@ -1,0 +1,44 @@
+Project: Student Report Generator
+Technology Used: Microsoft Excel, VBA
+
+Overview:
+This tool automates the generation of student report cards, exports them as PDFs and can send them to specified WhatsApp numbers. It uses two Excel files: "Book1" (the working file) and "Template" (used for formatting — do not edit unless necessary).
+
+Instructions:
+
+1. Setup (Sheet1 - Student & Subject Entry):
+- Enter student names in Column A.
+- Click "ADD SUBJECT ENTRY" to register each student.
+- To remove a student, select their name and click "DELETE SUBJECT ENTRY".
+- Use checkboxes to assign subjects to students.
+- Use subject buttons above columns to filter the student list by subject.
+- Click "REMOVE FILTERS" to reset and show all students.
+-The default password for sorting by 1st name is PASSWORD.
+-There’s a search box that can be used to search for names.
+
+2. Marks Entry (Sheet2):
+- First, go to Sheet1 and filter by subject.
+- Then go to Sheet2, click "APPLY FILTER", then "HIDE EMPTY NAMES" to show only students taking that subject.
+- Use "SHOW ALL SPACE" to manually unhide rows, or use "REMOVE FILTERS" in Sheet1 to unhide all.
+- You cannot enter marks for a student who is not registered for that subject in Sheet1.
+- Each subject column in Sheet2 has its own password to prevent editing marks for the wrong subject.
+- The default passwords are the short forms of the subject's names (e.g., AGR, BK), all uppercase. If uppercase doesn’t work try lowercase (that’s an error I often make).
+-The default password for the whole Sheet is PASSWORD.
+-Some cells on this Sheet are red/maroon/grey/darkened/ made to stand out in some way to indicate that a student doesn’t take the Subject of that column.
+-There’s also a search box that can be used to search for names.
+-I intend to add a search box for looking up marks.
+
+3. Data Display (Sheet3):
+- Displays marks and positions for individual subjects.
+- Do not edit this sheet unless you know what you are doing.
+
+4. Class Summary & Report Generation (Sheet4):
+- Displays class points and rankings.
+- Also displays a list of the students sorted by positions in class
+- To generate report cards:
+   - Click "CREATE REPORTS OF ALL" to generate for the whole class (takes time).
+   - Or double-click a student’s name to generate/update a single report card.
+
+5. Missed Subjects (Sheet5):
+-Shows students whose marks are missing for the subjects that they are registered for.
+-Orange under a subject means that the marks have not been entered in Sheet 2.
