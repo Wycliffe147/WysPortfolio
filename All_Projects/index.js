@@ -475,6 +475,28 @@ function checkAuthOnLoad() {
     }
 }
 
+// Back to Top Button functionality
+const backToTopButton = document.getElementById('backToTop');
+
+if (backToTopButton) {
+    // Show/hide button based on scroll position
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            backToTopButton.classList.add('visible');
+        } else {
+            backToTopButton.classList.remove('visible');
+        }
+    });
+
+    // Scroll to top when clicked
+    backToTopButton.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing contact link authentication handler...');
