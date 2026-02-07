@@ -16,7 +16,7 @@ function checkFirebaseAvailability() {
 }
 
 // Cookie management functions
-function setCookie(name, value, days = 7) {
+function setCookie(name, value, days = 365) {
     const expires = new Date();
     expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
     document.cookie = `${name}=${encodeURIComponent(JSON.stringify(value))};expires=${expires.toUTCString()};path=/;secure;samesite=strict`;
@@ -185,23 +185,11 @@ function parseJwt(token) {
     }
 }
 
-// Check if session is still valid (within 7 days)
-function isSessionValid(sessionData) {
-    if (!sessionData || !sessionData.signInTime) {
-        return false;
-    }
-    
-    const sessionAge = Date.now() - sessionData.signInTime;
-    const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-    
-    return sessionAge < maxAge;
-}
-
 // Store user session persistently
 function storeUserSession(user) {
     try {
-        // Store in cookie for persistence across sessions
-        setCookie('userSession', user, 7);
+        // Store in cookie for persistence across sessions (1 year)
+        setCookie('userSession', user, 365);
         
         // Also store in memory for immediate access
         window.tempUserSession = user;
@@ -279,7 +267,7 @@ function checkExistingAuth() {
     
     try {
         // First check memory
-        if (window.tempUserSession && isSessionValid(window.tempUserSession)) {
+        if (window.tempUserSession) {
             currentUser = window.tempUserSession;
             storeUserInFirebase(currentUser).catch(e => console.error('Firebase store error:', e));
             showAuthenticatedView();
@@ -289,7 +277,7 @@ function checkExistingAuth() {
         
         // Then check cookie
         const cookieSession = getCookie('userSession');
-        if (cookieSession && isSessionValid(cookieSession)) {
+        if (cookieSession) {
             currentUser = cookieSession;
             window.tempUserSession = cookieSession;
             storeUserInFirebase(currentUser).catch(e => console.error('Firebase store error:', e));
@@ -379,14 +367,6 @@ function initializeForm() {
     const originalBtnText = submitBtn.textContent;
     
     form.addEventListener('submit', function(e) {
-        if (!currentUser || !isSessionValid(currentUser)) {
-            e.preventDefault();
-            alert('Your session has expired. Please sign in again to send your message.');
-            clearUserSession();
-            showUnauthenticatedView();
-            return;
-        }
-        
         submitBtn.textContent = 'Sending Secure Message...';
         submitBtn.classList.add('loading');
         submitBtn.disabled = true;
@@ -518,19 +498,6 @@ function initializeKeyboardNavigation() {
     });
 }
 
-// Session validation check
-function initializeSessionValidation() {
-    setInterval(() => {
-        if (currentUser && !isSessionValid(currentUser)) {
-            console.log('Session expired, logging out user');
-            clearUserSession();
-            currentUser = null;
-            showUnauthenticatedView();
-            showError('Your session has expired. Please sign in again.');
-        }
-    }, 5 * 60 * 1000);
-}
-
 // Fallback initialization
 let initAttempts = 0;
 const maxAttempts = 5;
@@ -571,7 +538,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeBackButton();
     initializeScrollAnimations();
     initializeKeyboardNavigation();
-    initializeSessionValidation();
 });
 
 window.addEventListener('load', function() {
@@ -584,18 +550,6 @@ window.addEventListener('load', function() {
     setTimeout(attemptInitialization, 2000);
 });
 
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden && currentUser) {
-        if (!isSessionValid(currentUser)) {
-            console.log('Session expired while page was hidden');
-            clearUserSession();
-            currentUser = null;
-            showUnauthenticatedView();
-            showError('Your session has expired. Please sign in again.');
-        }
-    }
-});
-
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         initializeGoogleSignIn,
@@ -605,7 +559,6 @@ if (typeof module !== 'undefined' && module.exports) {
         checkExistingAuth,
         storeUserSession,
         clearUserSession,
-        isSessionValid,
         storeUserInFirebase
     };
 }
