@@ -272,7 +272,7 @@ function handleContactClick(event) {
     
     if (checkAuthStatus()) {
         console.log('User is authenticated, redirecting to contact page...');
-        window.location.href = '../contact.html';
+        window.location.href = 'contact.html';
     } else {
         console.log('User is not authenticated, redirecting to login page...');
         window.location.href = 'login.html';
@@ -499,4 +499,5 @@ if (typeof module !== 'undefined' && module.exports) {
         initializeContactLinkHandler
     };
 }
+
 
