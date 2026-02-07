@@ -63,8 +63,10 @@ if (document.getElementById('tutorialsContainer')) {
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 
-// All project cards (only projects on All_Projects.html)
-const allCards = document.querySelectorAll('.project-card');
+// Function to get all project cards (updated dynamically)
+function getAllCards() {
+    return document.querySelectorAll('.project-card');
+}
 
 // Highlight text function
 function highlightText(text, searchTerm) {
@@ -82,6 +84,7 @@ function performSearch(searchTerm) {
     }
     
     const results = [];
+    const allCards = getAllCards(); // Get cards dynamically
     
     allCards.forEach(card => {
         const searchData = card.getAttribute('data-search').toLowerCase();
@@ -124,6 +127,8 @@ function displayResults(results, searchTerm) {
             `;
             
             resultElement.addEventListener('click', () => {
+                const allCards = getAllCards(); // Get cards dynamically
+                
                 // First ensure all cards are visible
                 allCards.forEach(card => card.style.display = '');
                 
@@ -171,6 +176,7 @@ if (searchInput && searchResults) {
     searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const searchTerm = searchInput.value.trim().toLowerCase();
+            const allCards = getAllCards(); // Get cards dynamically
             
             if (!searchTerm) {
                 // Show all if search is empty
@@ -193,7 +199,8 @@ if (searchInput && searchResults) {
             });
             
             // Scroll to projects section if there are results
-            if (document.querySelector('.project-card[style=""]')) {
+            const visibleCard = document.querySelector('.project-card:not([style*="display: none"])');
+            if (visibleCard && document.getElementById('projects')) {
                 document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });
             }
             
@@ -473,28 +480,6 @@ function checkAuthOnLoad() {
     } else {
         console.log('User is authenticated, no popup needed.');
     }
-}
-
-// Back to Top Button functionality
-const backToTopButton = document.getElementById('backToTop');
-
-if (backToTopButton) {
-    // Show/hide button based on scroll position
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            backToTopButton.classList.add('visible');
-        } else {
-            backToTopButton.classList.remove('visible');
-        }
-    });
-
-    // Scroll to top when clicked
-    backToTopButton.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
 }
 
 // Initialize when DOM is ready
