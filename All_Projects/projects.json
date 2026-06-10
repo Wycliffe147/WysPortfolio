@@ -1,0 +1,62 @@
+[
+  {
+    "id": "e-library",
+    "title": "E-Library Platform",
+    "size": "large", 
+    "thumbnail": "../e-library.png",
+    "category": "Web App",
+    "shortDesc": "A digital sanctuary for knowledge, managing 10k+ resources.",
+    "story": {
+      "challenge": "PDFs and digital resources were scattered and difficult for users to access on low-bandwidth connections.",
+      "solution": "Developed a centralized hub with a custom previewing engine and optimized asset delivery.",
+      "result": "Unified the resource management system and significantly improved accessibility for 5,000+ users."
+    },
+    "tech": ["Node.js", "Firebase", "Express"],
+    "links": { "live": "#", "github": "https://github.com/Wycliffe147/e-library" }
+  },
+  {
+    "id": "star-pdf",
+    "title": "Star Search Engine",
+    "size": "medium", 
+    "thumbnail": "../StarPdf.png",
+    "category": "Tool",
+    "shortDesc": "Instant retrieval system for PDF data indexing.",
+    "story": {
+      "challenge": "Locating specific information within thousands of pages of PDF documents was nearly impossible manually.",
+      "solution": "Implemented an indexing system using PDF.js to extract text and a fast search algorithm.",
+      "result": "Search time dropped from minutes to milliseconds, making vast document sets easily searchable."
+    },
+    "tech": ["JavaScript", "PDF.js", "Algolia"],
+    "links": { "live": "#", "github": "https://github.com/Wycliffe147/Strar-pdf-search-website" }
+  },
+  {
+    "id": "portfolio-pwa",
+    "title": "Offline Portfolio",
+    "size": "small", 
+    "thumbnail": "https://via.placeholder.com/350x200?text=PWA+Design",
+    "category": "Mobile",
+    "shortDesc": "A native-app experience for the web.",
+    "story": {
+      "challenge": "Static portfolios often fail when users have intermittent internet connectivity.",
+      "solution": "Configured advanced service workers and background sync to ensure full offline functionality.",
+      "result": "The portfolio is now fully available anytime, anywhere, boosting engagement in low-connectivity areas."
+    },
+    "tech": ["PWA", "Service Workers", "Lighthouse"],
+    "links": { "live": "#", "github": "https://github.com/Wycliffe147/WyPortfolio-PWA" }
+  },
+  {
+    "id": "jarvis-v3",
+    "title": "Jarvis Assistant",
+    "size": "medium", 
+    "thumbnail": "https://via.placeholder.com/350x400?text=Jarvis+UI",
+    "category": "AI Tool",
+    "shortDesc": "AI-powered assistant with deep system integration.",
+    "story": {
+      "challenge": "Standard assistants are often locked into specific ecosystems and lack local system control.",
+      "solution": "Built a Python-based core that interacts directly with OS-level commands via voice and text.",
+      "result": "A truly personal AI that can manage files, run scripts, and control the environment locally."
+    },
+    "tech": ["Python", "Gemini API", "Termux"],
+    "links": { "live": "#", "github": "https://github.com/Wycliffe147/jarvis-assistant" }
+  }
+]

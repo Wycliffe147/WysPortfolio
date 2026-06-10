@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Projects - Wy's Portfolio (Design 3)</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Wy's Portfolio</div>
+                <nav>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="../index.html#projects">Back to Main</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>The Hybrid <span>Showcase</span></h1>
+            <p>A fusion of professional structure and immersive visual design.</p>
+            <div class="search-wrapper">
+                <input type="text" id="projectSearch" placeholder="Search by name, category, or tech...">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+    </section>
+
+    <section class="filters">
+        <div class="container">
+            <div class="filter-group" id="filterGroup">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="Web App">Web Apps</button>
+                <button class="filter-btn" data-category="Tool">Tools</button>
+                <button class="filter-btn" data-category="Mobile">Mobile</button>
+                <button class="filter-btn" data-category="AI Tool">AI Tools</button>
+            </div>
+        </div>
+    </section>
+
+    <main class="grid-section">
+        <div class="container">
+            <div id="bentoGrid" class="bento-grid">
+                <!-- Loaded via main.js -->
+            </div>
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-search-minus"></i>
+                <p>No matches found in the gallery.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Wy's Portfolio. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
