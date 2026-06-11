@@ -275,10 +275,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Check for saved theme preference
     const currentTheme = localStorage.getItem('theme');
-    if (currentTheme === 'dark') {
+    if (currentTheme !== 'light') {
         document.body.classList.add('dark-mode');
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
+        if (sunIcon) sunIcon.style.display = 'none';
+        if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (sunIcon) sunIcon.style.display = 'block';
+        if (moonIcon) moonIcon.style.display = 'none';
     }
 
     if (themeToggle) {

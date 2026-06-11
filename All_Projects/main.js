@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Check for theme preference
     const currentTheme = localStorage.getItem('theme');
-    if (currentTheme === 'dark') {
+    if (currentTheme !== 'light') {
         document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
     }
 
     // Theme Toggle Logic
@@ -10,9 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const sunIcon = document.querySelector('.sun-icon');
     const moonIcon = document.querySelector('.moon-icon');
     
-    if (currentTheme === 'dark') {
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
+    if (currentTheme !== 'light') {
+        if (sunIcon) sunIcon.style.display = 'none';
+        if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+        if (sunIcon) sunIcon.style.display = 'block';
+        if (moonIcon) moonIcon.style.display = 'none';
     }
 
     if (themeToggle) {

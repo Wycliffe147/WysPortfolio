@@ -526,8 +526,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Check for theme preference
     const currentTheme = localStorage.getItem('theme');
-    if (currentTheme === 'dark') {
+    if (currentTheme !== 'light') {
         document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
     }
     
     showLoadingState();
