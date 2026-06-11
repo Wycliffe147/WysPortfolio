@@ -9,11 +9,11 @@
 <body>
     <!-- Header -->
 <!-- Updated Header Section -->
-<header>
+<header id="mainHeader">
     <div class="container header-content">
         <div class="logo" id="logoElement" title="Double-click to access dashboard">Wy'sPortfolio</div>
-        <nav>
-            <ul>
+        <nav id="mainNav">
+            <ul id="navLinks">
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#tutorials">Tutorials</a></li>
                 <li><a href="#about">About</a></li>
@@ -21,6 +21,24 @@
                 <!-- Dashboard link removed from here -->
             </ul>
         </nav>
+        <div class="header-actions">
+            <button class="search-toggle" id="stickySearchToggle" aria-label="Search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </button>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        <div class="sticky-search-container" id="stickySearchContainer">
+            <input type="text" class="sticky-search-input" placeholder="Search projects & tutorials..." id="stickySearchInput">
+            <button class="close-search" id="closeStickySearch">&times;</button>
+            <div class="search-results" id="stickySearchResults"></div>
+        </div>
     </div>
 </header>
 
@@ -85,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h1>Innovator, Learner & Educator</h1>
             <p>I do DIY projects, share what I learn, and create educational content to help others grow their development skills alongside me.</p>
             
-            <div class="search-container">
+            <div class="search-container" id="heroSearchContainer">
                 <input type="text" class="search-input" placeholder="Search projects & tutorials..." id="searchInput">
                 <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>

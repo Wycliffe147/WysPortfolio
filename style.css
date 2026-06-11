@@ -55,6 +55,175 @@ nav ul li a:hover {
     color: #3498db;
 }
 
+/* Header Actions (Hamburger & Search Toggle) */
+.header-actions {
+    display: none; /* Hidden by default */
+    align-items: center;
+    gap: 15px;
+}
+
+.hamburger, .search-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+}
+
+.hamburger:hover, .search-toggle:hover {
+    color: #3498db;
+}
+
+/* Hamburger Icon Animation */
+.hamburger {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.hamburger span {
+    width: 100%;
+    height: 2px;
+    background-color: currentColor;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Sticky Search Container in Header */
+.sticky-search-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #2c3e50;
+    display: none;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 101;
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sticky-search-container.active {
+    display: flex;
+}
+
+.sticky-search-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-bottom: 2px solid white;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    outline: none;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#stickySearchResults {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 800px;
+    border-radius: 0 0 12px 12px;
+}
+
+.close-search {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    margin-left: 15px;
+    padding: 0 10px;
+    transition: transform 0.3s;
+}
+
+.close-search:hover {
+    transform: rotate(90deg);
+    color: #e74c3c;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scrolled Header State */
+header {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+header.scrolled {
+    padding: 8px 0;
+    background-color: rgba(44, 62, 80, 0.98);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+header.scrolled .logo {
+    font-size: 20px;
+    transform: scale(0.9);
+    margin-left: 0;
+}
+
+header.scrolled .header-content {
+    max-width: 1100px;
+}
+
+header.scrolled #mainNav ul#navLinks {
+    display: none;
+}
+
+header.scrolled .header-actions {
+    display: flex;
+}
+
+/* Mobile Menu when hamburger is active in scrolled mode */
+header.scrolled #mainNav.mobile-active ul#navLinks {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #2c3e50;
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s ease;
+}
+
+header.scrolled #mainNav.mobile-active ul#navLinks li {
+    margin: 0;
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* Search Bar */
 .search-container {
     position: relative;
@@ -567,19 +736,38 @@ footer {
         text-align: center;
         gap: 15px;
         padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+
+    header.scrolled .header-content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 20px;
+        gap: 0;
     }
     
     .logo {
         font-size: 20px;
         margin: 0;
-        width: 100%;
-        text-align: center;
+        width: auto;
+        text-align: left;
+        transition: all 0.3s ease;
+    }
+
+    header.scrolled .logo {
+        width: auto;
+        text-align: left;
     }
     
     nav {
         width: 100%;
         display: flex;
         justify-content: center;
+    }
+
+    header.scrolled nav {
+        width: auto;
     }
     
     nav ul {
@@ -644,6 +832,10 @@ footer {
     .header-content {
         padding: 8px 15px;
         gap: 12px;
+    }
+
+    header.scrolled .header-content {
+        padding: 5px 15px;
     }
     
     .logo {
