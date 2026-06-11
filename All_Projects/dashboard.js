@@ -368,14 +368,50 @@ document.getElementById('logoutBtn').addEventListener('click', (e) => {
     }
 });
 
-// ============================================
 // Initialize Dashboard
 // ============================================
 
+function updateConnectionStatus(message, type = 'info') {
+    const statusDiv = document.getElementById('connectionStatus');
+    if (!statusDiv) return;
+    
+    statusDiv.style.display = 'block';
+    statusDiv.textContent = message;
+    
+    if (type === 'success') {
+        statusDiv.style.background = '#d1fae5';
+        statusDiv.style.color = '#065f46';
+    } else if (type === 'danger') {
+        statusDiv.style.background = '#fee2e2';
+        statusDiv.style.color = '#991b1b';
+    } else {
+        statusDiv.style.background = '#dbeafe';
+        statusDiv.style.color = '#1e40af';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    loadProjects((projects) => {
-        allProjects = projects;
-        renderProjectsTable(projects);
-        updateStats(projects);
-    });
+    updateConnectionStatus('Connecting to Firebase...');
+    
+    // Check if firebase is loaded
+    if (typeof firebase === 'undefined') {
+        updateConnectionStatus('❌ Firebase SDK not found. Check your internet or config.', 'danger');
+        return;
+    }
+
+    try {
+        const database = firebase.database();
+        const projectsRef = database.ref(PROJECTS_PATH);
+
+        loadProjects((projects) => {
+            allProjects = projects;
+            renderProjectsTable(projects);
+            updateStats(projects);
+            updateConnectionStatus('✅ Connected to Firebase', 'success');
+            // Hide status after 3 seconds if successful
+            setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+        });
+    } catch (e) {
+        updateConnectionStatus(`❌ Initialization Error: ${e.message}`, 'danger');
+    }
 });
