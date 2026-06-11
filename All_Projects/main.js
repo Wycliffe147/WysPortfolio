@@ -11,6 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('themeToggle');
     const sunIcon = document.querySelector('.sun-icon');
     const moonIcon = document.querySelector('.moon-icon');
+
+    // Secret Dashboard Access
+    const logoElement = document.getElementById('logoElement');
+    if (logoElement) {
+        logoElement.style.cursor = 'pointer';
+        logoElement.addEventListener('dblclick', () => {
+            window.location.href = 'Projects_Dashboard.html';
+        });
+    }
     
     if (currentTheme !== 'light') {
         if (sunIcon) sunIcon.style.display = 'none';
