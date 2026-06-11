@@ -45,16 +45,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    fetch('projects.json')
-        .then(res => res.json())
-        .then(projects => {
-            const project = projects.find(p => p.id === projectId);
-            if (!project) {
-                projectDetail.innerHTML = '<h1>Project not found</h1><a href="index.html">Back to Showcase</a>';
-                return;
-            }
+    const database = firebase.database();
+
+    // Fetch project from Firebase
+    database.ref('projects').orderByChild('id').equalTo(projectId).once('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Since equalTo returns a map of results, we take the first one
+            const project = Object.values(data)[0];
             renderDetails(project);
-        });
+        } else {
+            // Fallback to static JSON if not found in Firebase
+            fetch('projects.json')
+                .then(res => res.json())
+                .then(projects => {
+                    const project = projects.find(p => p.id === projectId);
+                    if (!project) {
+                        projectDetail.innerHTML = '<h1>Project not found</h1><a href="index.html">Back to Showcase</a>';
+                        return;
+                    }
+                    renderDetails(project);
+                });
+        }
+    });
 
     function renderDetails(p) {
         projectDetail.innerHTML = `

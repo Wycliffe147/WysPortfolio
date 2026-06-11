@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projects Dashboard - Wy's Portfolio</title>
     <link rel="stylesheet" href="dashboard-style.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="../firebase-config.js"></script>
     <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -116,32 +120,95 @@
             <form id="projectForm">
                 <input type="hidden" id="projectIndex">
                 
-                <div class="form-group">
-                    <label for="projectName">Project Name *</label>
-                    <input type="text" id="projectName" required placeholder="Enter project name">
+                <div class="form-tabs">
+                    <button type="button" class="tab-btn active" data-tab="basic">Basic Info</button>
+                    <button type="button" class="tab-btn" data-tab="story">Project Story</button>
+                    <button type="button" class="tab-btn" data-tab="links">Links & Tech</button>
                 </div>
 
-                <div class="form-group">
-                    <label for="projectDescription">Description *</label>
-                    <textarea id="projectDescription" required placeholder="Brief description of the project" rows="3"></textarea>
+                <!-- Basic Info Tab -->
+                <div class="tab-content active" id="basic">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectName">Project Name *</label>
+                            <input type="text" id="projectName" required placeholder="Enter project name">
+                        </div>
+                        <div class="form-group">
+                            <label for="projectId">Project ID (Slug) *</label>
+                            <input type="text" id="projectId" required placeholder="e-library-v2">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectCategory">Category *</label>
+                            <select id="projectCategory" required>
+                                <option value="Web App">Web App</option>
+                                <option value="Mobile">Mobile</option>
+                                <option value="AI Tool">AI Tool</option>
+                                <option value="Tool">Tool</option>
+                                <option value="Design">Design</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectSize">Card Size *</label>
+                            <select id="projectSize" required>
+                                <option value="small">Small</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="large">Large</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectDescription">Short Description (Card) *</label>
+                        <textarea id="projectDescription" required placeholder="Brief description for the card" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectImage">Thumbnail Image URL *</label>
+                        <input type="text" id="projectImage" required placeholder="../e-library.png">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="projectImage">Image URL *</label>
-                    <input type="text" id="projectImage" required placeholder="https://example.com/image.jpg">
-                    <small>Use a placeholder or upload your image to an image hosting service</small>
+                <!-- Story Tab -->
+                <div class="tab-content" id="story">
+                    <div class="form-group">
+                        <label for="storyChallenge">The Challenge *</label>
+                        <textarea id="storyChallenge" required placeholder="What problem were you solving?" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="storySolution">The Solution *</label>
+                        <textarea id="storySolution" required placeholder="How did you build it?" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="storyResult">The Result *</label>
+                        <textarea id="storyResult" required placeholder="What was the outcome?" rows="3"></textarea>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="projectTags">Tags (comma-separated) *</label>
-                    <input type="text" id="projectTags" required placeholder="e.g., Web, Design, JavaScript">
-                    <small>Enter tags separated by commas</small>
-                </div>
+                <!-- Links & Tech Tab -->
+                <div class="tab-content" id="links">
+                    <div class="form-group">
+                        <label for="projectTags">Technologies (comma-separated) *</label>
+                        <input type="text" id="projectTags" required placeholder="Node.js, Firebase, Express">
+                    </div>
 
-                <div class="form-group">
-                    <label for="projectSearchKeywords">Search Keywords (comma-separated)</label>
-                    <input type="text" id="projectSearchKeywords" placeholder="e.g., automation, tool, excel">
-                    <small>Additional keywords to help users find this project</small>
+                    <div class="form-group">
+                        <label for="projectSearchKeywords">Search Keywords</label>
+                        <input type="text" id="projectSearchKeywords" placeholder="automation, school, library">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="linkLive">Live Demo URL</label>
+                            <input type="text" id="linkLive" placeholder="#">
+                        </div>
+                        <div class="form-group">
+                            <label for="linkGithub">GitHub URL</label>
+                            <input type="text" id="linkGithub" placeholder="https://github.com/...">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-actions">

@@ -45,13 +45,29 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentCategory = 'all';
     let searchQuery = '';
 
-    // Fetch projects
-    fetch('projects.json')
-        .then(res => res.json())
-        .then(data => {
-            allProjects = data;
+    // Firebase initialization is handled by firebase-config.js
+    const database = firebase.database();
+
+    // Fetch projects from Firebase
+    database.ref('projects').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            allProjects = Object.values(data);
             renderGrid();
-        });
+        } else {
+            // If Firebase is empty, try fallback to projects.json or show empty
+            fetch('projects.json')
+                .then(res => res.json())
+                .then(data => {
+                    allProjects = data;
+                    renderGrid();
+                })
+                .catch(() => {
+                    allProjects = [];
+                    renderGrid();
+                });
+        }
+    });
 
     function renderGrid() {
         const filtered = allProjects.filter(p => {
