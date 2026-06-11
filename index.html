@@ -19,16 +19,6 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="contact.html" id="contactLink">Contact</a></li>
                 <!-- Dashboard link removed from here -->
-                <li>
-                    <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search projects & tutorials..." id="searchInput">
-                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <div class="search-results" id="searchResults"></div>
-                    </div>
-                </li>
             </ul>
         </nav>
     </div>
@@ -94,7 +84,17 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="container">
             <h1>Innovator, Learner & Educator</h1>
             <p>I do DIY projects, share what I learn, and create educational content to help others grow their development skills alongside me.</p>
-            <a href="#projects" class="btn">View My Work</a>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search projects & tutorials..." id="searchInput">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+
+            <a href="#projects" class="btn" style="margin-top: 20px;">View My Work</a>
         </div>
     </section>
 
