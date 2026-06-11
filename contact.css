@@ -1,12 +1,43 @@
+:root {
+    --bg-color: #f5f5f5;
+    --text-color: #333;
+    --card-bg: white;
+    --card-text: #666;
+    --hero-gradient: linear-gradient(135deg, #3498db, #2c3e50);
+    --section-bg-alt: #f8f9fa;
+    --border-color: #e1e8ed;
+    --input-bg: #f8f9fa;
+    --footer-bg: #2c3e50;
+    --notice-bg: #e8f5e8;
+    --notice-border: #27ae60;
+    --notice-text: #2c3e50;
+}
+
+body.dark-mode {
+    --bg-color: #0a0e14;
+    --text-color: #ffffff;
+    --card-bg: #151c26;
+    --card-text: #b0b0b0;
+    --hero-gradient: linear-gradient(135deg, #151c26, #0a0e14);
+    --section-bg-alt: #10161d;
+    --border-color: #30363d;
+    --input-bg: #0d1117;
+    --footer-bg: #0d1117;
+    --notice-bg: rgba(39, 174, 96, 0.1);
+    --notice-border: #27ae60;
+    --notice-text: #ffffff;
+}
+
 /* Base styles from style.css that contact.html needs */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: #333;
+    color: var(--text-color);
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
+    background-color: var(--bg-color);
     overflow-x: hidden; /* Prevent horizontal scroll */
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
@@ -17,7 +48,7 @@ body {
 
 /* Contact Page Specific Styles */
 .contact-hero {
-    background: linear-gradient(135deg, #3498db, #2c3e50);
+    background: var(--hero-gradient);
     color: white;
     padding: 80px 0 60px;
     text-align: center;
@@ -43,7 +74,7 @@ body {
 
 .contact-main {
     padding: 60px 0;
-    background-color: #f8f9fa;
+    background-color: var(--bg-color);
 }
 
 .contact-grid {
@@ -54,7 +85,7 @@ body {
 }
 
 .contact-info-card {
-    background: white;
+    background: var(--card-bg);
     padding: 30px 20px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -63,7 +94,7 @@ body {
 }
 
 .contact-info-card h2 {
-    color: #2c3e50;
+    color: var(--text-color);
     margin-bottom: 25px;
     font-size: clamp(22px, 4vw, 28px);
     text-align: center;
@@ -74,7 +105,7 @@ body {
     align-items: flex-start;
     margin-bottom: 20px;
     padding: 15px;
-    background-color: #f8f9fa;
+    background-color: var(--section-bg-alt);
     border-radius: 8px;
     transition: transform 0.3s ease;
     flex-direction: row;
@@ -101,14 +132,14 @@ body {
 
 .contact-details h3 {
     margin: 0 0 5px 0;
-    color: #2c3e50;
+    color: var(--text-color);
     font-size: 16px;
     font-weight: 600;
 }
 
 .contact-details p {
     margin: 0;
-    color: #666;
+    color: var(--card-text);
     line-height: 1.6;
     font-size: 14px;
     word-break: break-word;
@@ -116,7 +147,7 @@ body {
 
 /* Authentication Section */
 .auth-section {
-    background: white;
+    background: var(--card-bg);
     padding: 30px 20px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -125,13 +156,13 @@ body {
 }
 
 .auth-section h2 {
-    color: #2c3e50;
+    color: var(--text-color);
     margin-bottom: 20px;
     font-size: clamp(22px, 4vw, 28px);
 }
 
 .auth-description {
-    color: #666;
+    color: var(--card-text);
     margin-bottom: 25px;
     font-size: 15px;
     line-height: 1.6;
@@ -159,7 +190,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: #666;
+    color: var(--card-text);
     font-size: 14px;
     justify-content: center;
 }
@@ -179,7 +210,7 @@ body {
     align-items: center;
     gap: 12px;
     padding: 15px;
-    background: #f8f9fa;
+    background: var(--section-bg-alt);
     border-radius: 8px;
     margin-bottom: 20px;
     flex-wrap: wrap;
@@ -201,14 +232,14 @@ body {
 
 .user-details h3 {
     margin: 0;
-    color: #2c3e50;
+    color: var(--text-color);
     font-size: 15px;
     font-weight: 600;
 }
 
 .user-details p {
     margin: 0;
-    color: #666;
+    color: var(--card-text);
     font-size: 13px;
     word-break: break-all;
 }
@@ -230,7 +261,7 @@ body {
 }
 
 .contact-form-card {
-    background: white;
+    background: var(--card-bg);
     padding: 30px 20px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -238,7 +269,7 @@ body {
 }
 
 .contact-form-card h2 {
-    color: #2c3e50;
+    color: var(--text-color);
     margin-bottom: 25px;
     font-size: clamp(22px, 4vw, 28px);
     text-align: center;
@@ -251,7 +282,7 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #2c3e50;
+    color: var(--text-color);
     font-weight: 600;
     font-size: 15px;
 }
@@ -259,11 +290,12 @@ body {
 .form-control {
     width: 100%;
     padding: 14px 16px;
-    border: 2px solid #e1e8ed;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 16px;
     transition: border-color 0.3s ease;
-    background-color: #f8f9fa;
+    background-color: var(--input-bg);
+    color: var(--text-color);
     box-sizing: border-box;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -273,7 +305,7 @@ body {
 .form-control:focus {
     outline: none;
     border-color: #3498db;
-    background-color: white;
+    background-color: var(--card-bg);
 }
 
 textarea.form-control {
@@ -312,8 +344,8 @@ textarea.form-control {
     position: fixed;
     top: 15px;
     left: 15px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #2c3e50;
+    background: var(--card-bg);
+    color: var(--text-color);
     padding: 10px 16px;
     border-radius: 25px;
     text-decoration: none;
@@ -337,34 +369,34 @@ textarea.form-control {
 }
 
 .security-notice {
-    background: #e8f5e8;
-    border: 1px solid #27ae60;
+    background: var(--notice-bg);
+    border: 1px solid var(--notice-border);
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
-    color: #2c3e50;
+    color: var(--notice-text);
     font-size: 14px;
     line-height: 1.5;
 }
 
 .security-notice .notice-icon {
-    color: #27ae60;
+    color: var(--notice-border);
     margin-right: 8px;
 }
 
 .error-message {
-    background: #fee;
+    background: rgba(231, 76, 60, 0.1);
     border: 1px solid #e74c3c;
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
-    color: #c0392b;
+    color: #e74c3c;
     font-size: 14px;
 }
 
 /* Footer Styles */
 footer {
-    background-color: #2c3e50;
+    background-color: var(--footer-bg);
     color: white;
     padding: 25px 0;
     text-align: center;

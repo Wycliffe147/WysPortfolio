@@ -524,6 +524,12 @@ function attemptInitialization() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing contact page...');
     
+    // Check for theme preference
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+    
     showLoadingState();
     
     // Wait for Firebase to load before checking auth

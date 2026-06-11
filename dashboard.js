@@ -208,5 +208,11 @@ document.querySelectorAll('.sort-btn').forEach(btn => {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for theme preference
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+    
     passwordInput.focus();
 });

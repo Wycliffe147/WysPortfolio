@@ -1,14 +1,25 @@
 :root {
     --primary: #2c3e50;
     --accent: #3498db;
-    --bg-light: #f5f5f5;
-    --bg-dark: #0a0e14;
+    --bg: #f5f5f5;
     --card-bg: #ffffff;
-    --card-bg-dark: #151c26;
     --text: #333;
     --text-muted: #7f8c8d;
     --text-bright: #ffffff;
+    --border: #ddd;
+    --hero-bg: #3498db;
+    --footer-bg: white;
     --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.dark-mode {
+    --bg: #0a0e14;
+    --card-bg: #151c26;
+    --text: #ffffff;
+    --text-muted: #b0b0b0;
+    --border: #30363d;
+    --hero-bg: #151c26;
+    --footer-bg: #0d1117;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,13 +28,37 @@ body {
     font-family: 'Segoe UI', system-ui, sans-serif;
     line-height: 1.6;
     color: var(--text);
-    background-color: var(--bg-light);
+    background-color: var(--bg);
     overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
 }
 
+/* For compatibility with existing details page logic */
 body.details-page {
-    background-color: var(--bg-dark);
-    color: var(--text-bright);
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+/* Override the default dark feel of details page when NOT in dark mode */
+body.details-page:not(.dark-mode) {
+    --bg: #f5f5f5;
+    --text: #333;
+    --card-bg: #ffffff;
+    --text-muted: #7f8c8d;
+    --border: #ddd;
+    --hero-bg: #3498db;
+    --footer-bg: white;
+}
+
+/* Ensure project details look right in dark mode */
+body.details-page.dark-mode {
+    --bg: #0a0e14;
+    --text: #ffffff;
+    --card-bg: #151c26;
+    --text-muted: #b0b0b0;
+    --border: #30363d;
+    --hero-bg: #151c26;
+    --footer-bg: #0d1117;
 }
 
 .container {
@@ -57,8 +92,9 @@ nav ul li a:hover { color: var(--accent); }
 .hero {
     padding: 100px 0;
     text-align: center;
-    background-color: #3498db;
+    background-color: var(--hero-bg);
     color: white;
+    transition: background-color 0.3s;
 }
 
 .hero h1 {
@@ -68,6 +104,10 @@ nav ul li a:hover { color: var(--accent); }
 
 .hero h1 span {
     color: var(--primary);
+}
+
+body.dark-mode .hero h1 span {
+    color: var(--accent);
 }
 
 .hero p {
@@ -106,7 +146,7 @@ nav ul li a:hover { color: var(--accent); }
     background-color: white;
     color: #333;
     width: 100%;
-    border-color: #2c3e50;
+    border-color: var(--primary);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -129,13 +169,14 @@ nav ul li a:hover { color: var(--accent); }
 }
 
 /* Filters */
-.filters { padding: 2rem 0; background: white; border-bottom: 1px solid #ddd; }
+.filters { padding: 2rem 0; background: var(--card-bg); border-bottom: 1px solid var(--border); transition: background-color 0.3s; }
 .filter-group { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
 .filter-btn {
     padding: 0.7rem 1.8rem;
     border-radius: 30px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     background: transparent;
+    color: var(--text);
     cursor: pointer;
     font-weight: 600;
     transition: var(--transition);
@@ -158,7 +199,7 @@ nav ul li a:hover { color: var(--accent); }
 }
 
 .bento-item {
-    background: white;
+    background: var(--card-bg);
     border-radius: 20px;
     overflow: hidden;
     position: relative;
@@ -226,8 +267,7 @@ nav ul li a:hover { color: var(--accent); }
 .btn-main:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4); }
 
 /* Footer */
-footer { padding: 3rem 0; text-align: center; background: white; border-top: 1px solid #ddd; }
-.details-page footer { background: #0d1117; border-top: 1px solid #30363d; color: var(--text-muted); }
+footer { padding: 3rem 0; text-align: center; background: var(--footer-bg); border-top: 1px solid var(--border); transition: background-color 0.3s; }
 
 /* Responsive */
 @media (max-width: 1024px) {
