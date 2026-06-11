@@ -20,10 +20,11 @@ function loadProjects(callback) {
             firebaseKey: key
         })) : [];
         
+        allProjects = projectsWithKeys; // Update global variable
         if (callback) callback(projectsWithKeys);
     }, (error) => {
         console.error('Error loading projects from Firebase:', error);
-        showNotification('Failed to load projects', 'danger');
+        showNotification(`Failed to load projects: ${error.message}`, 'danger');
     });
 }
 
