@@ -16,8 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoElement = document.getElementById('logoElement');
     if (logoElement) {
         logoElement.style.cursor = 'pointer';
-        logoElement.addEventListener('dblclick', () => {
+        logoElement.style.transition = 'transform 0.1s ease';
+        logoElement.style.userSelect = 'none';
+
+        logoElement.addEventListener('dblclick', (e) => {
+            e.preventDefault();
             window.location.href = 'Projects_Dashboard.html';
+        });
+
+        logoElement.addEventListener('click', () => {
+            logoElement.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                logoElement.style.transform = 'scale(1)';
+            }, 100);
         });
     }
     
