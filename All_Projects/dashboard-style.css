@@ -664,6 +664,29 @@ body {
     border-color: var(--primary);
 }
 
+/* Validation Styles */
+.form-group input.is-invalid {
+    border-color: var(--danger);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+.form-group input.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.validation-hint {
+    display: none;
+    font-size: 0.75rem;
+    color: var(--danger);
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+.form-group input.is-invalid + .validation-hint,
+.input-with-action + .validation-hint {
+    display: block;
+}
+
 .form-group small {
     display: block;
     margin-top: 0.5rem;

@@ -153,6 +153,29 @@ function testLink(inputId) {
     }
 }
 
+// Real-time validation listeners
+function setupRealTimeValidation() {
+    const linkInputs = ['linkLive', 'linkGithub'];
+    
+    linkInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', () => {
+                const val = input.value.trim();
+                if (isValidUrl(val)) {
+                    input.classList.remove('is-invalid');
+                } else {
+                    input.classList.add('is-invalid');
+                }
+            });
+        }
+    });
+}
+
+function clearValidationStates() {
+    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+}
+
 // ============================================
 // Modal & Tab Management
 // ============================================
@@ -203,6 +226,7 @@ function openAddProjectModal() {
     document.getElementById('modalTitle').textContent = 'Add New Project';
     projectForm.reset();
     resetTabs();
+    clearValidationStates();
     projectModal.classList.add('active');
 }
 
@@ -214,6 +238,7 @@ function editProject(key) {
     
     document.getElementById('modalTitle').textContent = 'Edit Project';
     resetTabs();
+    clearValidationStates();
     
     // Populate form
     document.getElementById('projectName').value = project.title || '';
@@ -460,6 +485,7 @@ function updateConnectionStatus(message, type = 'info') {
 
 document.addEventListener('DOMContentLoaded', function() {
     updateConnectionStatus('Connecting to Firebase...');
+    setupRealTimeValidation();
     
     // Check if firebase is loaded
     if (typeof firebase === 'undefined') {
