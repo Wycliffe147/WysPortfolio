@@ -683,7 +683,7 @@ body {
 }
 
 .form-group input.is-invalid + .validation-hint,
-.input-with-action + .validation-hint {
+.input-with-action:has(input.is-invalid) + .validation-hint {
     display: block;
 }
 
