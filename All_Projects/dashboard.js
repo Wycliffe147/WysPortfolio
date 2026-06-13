@@ -138,8 +138,9 @@ function isValidUrl(string) {
 }
 
 // Function to test links in a new tab
-function testLink(inputId) {
-    const url = document.getElementById(inputId).value.trim();
+function testLink(button) {
+    const urlInput = button.closest('.input-with-action').querySelector('input');
+    const url = urlInput.value.trim();
     if (!url || url === '#') {
         showNotification('Please enter a URL first', 'info');
         return;
@@ -153,23 +154,67 @@ function testLink(inputId) {
     }
 }
 
-// Real-time validation listeners
-function setupRealTimeValidation() {
-    const linkInputs = ['linkLive', 'linkGithub'];
+// Dynamic Link Row Management
+const linksContainer = document.getElementById('linksContainer');
+
+function createLinkRow(label = '', url = '') {
+    const row = document.createElement('div');
+    row.className = 'link-row';
+    row.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label>Link Label</label>
+                <input type="text" class="link-label" placeholder="e.g., Live Site" value="${label}">
+            </div>
+            <div class="form-group">
+                <label>Link URL</label>
+                <div class="input-with-action">
+                    <input type="text" class="link-url" placeholder="https://..." value="${url}">
+                    <button type="button" class="btn-test" onclick="testLink(this)">Test</button>
+                    <button type="button" class="btn-danger btn-remove" onclick="removeLinkRow(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <span class="validation-hint">Please enter a valid URL (including https://)</span>
+            </div>
+        </div>
+    `;
     
-    linkInputs.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('input', () => {
-                const val = input.value.trim();
-                if (isValidUrl(val)) {
-                    input.classList.remove('is-invalid');
-                } else {
-                    input.classList.add('is-invalid');
-                }
-            });
+    // Add real-time validation to the new URL input
+    const urlInput = row.querySelector('.link-url');
+    urlInput.addEventListener('input', () => {
+        if (isValidUrl(urlInput.value.trim())) {
+            urlInput.classList.remove('is-invalid');
+        } else {
+            urlInput.classList.add('is-invalid');
         }
     });
+
+    return row;
+}
+
+function addLinkRow(label = '', url = '') {
+    linksContainer.appendChild(createLinkRow(label, url));
+}
+
+function removeLinkRow(button) {
+    const row = button.closest('.link-row');
+    row.remove();
+}
+
+function clearLinkRows() {
+    linksContainer.innerHTML = '';
+}
+
+// URL Validation helper
+function isValidUrl(string) {
+    if (!string || string === '#') return true; // Allow empty or # as "not provided"
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;  
+    }
 }
 
 function clearValidationStates() {
@@ -227,6 +272,10 @@ function openAddProjectModal() {
     projectForm.reset();
     resetTabs();
     clearValidationStates();
+    clearLinkRows();
+    // Start with two default rows for new projects
+    addLinkRow('Live Demo', '');
+    addLinkRow('GitHub', '');
     projectModal.classList.add('active');
 }
 
@@ -239,6 +288,7 @@ function editProject(key) {
     document.getElementById('modalTitle').textContent = 'Edit Project';
     resetTabs();
     clearValidationStates();
+    clearLinkRows();
     
     // Populate form
     document.getElementById('projectName').value = project.title || '';
@@ -254,8 +304,18 @@ function editProject(key) {
     
     document.getElementById('projectTags').value = project.tech ? project.tech.join(', ') : '';
     document.getElementById('projectSearchKeywords').value = project.searchKeywords || '';
-    document.getElementById('linkLive').value = project.links?.live || '';
-    document.getElementById('linkGithub').value = project.links?.github || '';
+    
+    // Handle dynamic links with backward compatibility
+    if (Array.isArray(project.links)) {
+        project.links.forEach(link => addLinkRow(link.label, link.url));
+    } else if (project.links) {
+        // Migration logic for old object format
+        if (project.links.live && project.links.live !== '#') addLinkRow('Live Demo', project.links.live);
+        if (project.links.github && project.links.github !== '#') addLinkRow('GitHub', project.links.github);
+    }
+    
+    // Ensure at least one row if empty
+    if (linksContainer.children.length === 0) addLinkRow();
     
     projectModal.classList.add('active');
 }
@@ -305,16 +365,25 @@ function confirmDelete() {
 projectForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const liveUrl = document.getElementById('linkLive').value.trim();
-    const githubUrl = document.getElementById('linkGithub').value.trim();
+    const linkRows = document.querySelectorAll('.link-row');
+    const links = [];
+    let hasInvalidUrl = false;
 
-    // Validate URLs
-    if (!isValidUrl(liveUrl)) {
-        showNotification('Please enter a valid Live Demo URL (including http:// or https://)', 'danger');
-        return;
-    }
-    if (!isValidUrl(githubUrl)) {
-        showNotification('Please enter a valid GitHub URL (including http:// or https://)', 'danger');
+    linkRows.forEach(row => {
+        const label = row.querySelector('.link-label').value.trim();
+        const url = row.querySelector('.link-url').value.trim();
+        
+        if (url) {
+            if (!isValidUrl(url)) {
+                row.querySelector('.link-url').classList.add('is-invalid');
+                hasInvalidUrl = true;
+            }
+            links.push({ label: label || 'Link', url: url });
+        }
+    });
+
+    if (hasInvalidUrl) {
+        showNotification('Please correct the invalid URLs', 'danger');
         return;
     }
 
@@ -332,10 +401,7 @@ projectForm.addEventListener('submit', function(e) {
         },
         tech: document.getElementById('projectTags').value.split(',').map(t => t.trim()).filter(t => t),
         searchKeywords: document.getElementById('projectSearchKeywords').value.trim(),
-        links: {
-            live: liveUrl || '',
-            github: githubUrl || ''
-        }
+        links: links
     };
     
     saveProjectToFirebase(project, currentEditKey)
@@ -445,6 +511,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
 });
 
 document.getElementById('addProjectBtn').addEventListener('click', openAddProjectModal);
+document.getElementById('addLinkBtn').addEventListener('click', () => addLinkRow());
 document.getElementById('closeModal').addEventListener('click', closeProjectModal);
 document.getElementById('cancelBtn').addEventListener('click', closeProjectModal);
 document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);

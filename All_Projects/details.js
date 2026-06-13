@@ -100,12 +100,30 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
 
                         <div class="detail-actions">
-                            ${p.links && p.links.live && p.links.live !== '#' ? 
-                                `<a href="${p.links.live}" class="btn-main" target="_blank">Launch Live Site</a>` : ''}
-                            ${p.links && p.links.github && p.links.github !== '#' ? 
-                                `<a href="${p.links.github}" class="btn-github" target="_blank" style="text-decoration:none; color:white; padding:1.2rem; border-radius:15px; background:rgba(255,255,255,0.1); font-weight:700;">
-                                    <i class="fab fa-github"></i> View Code
-                                </a>` : ''}
+                            ${(() => {
+                                if (Array.isArray(p.links)) {
+                                    return p.links.map(link => `
+                                        <a href="${link.url}" class="btn-main" target="_blank" style="margin-right: 1rem; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                            ${link.label.toLowerCase().includes('github') || link.label.toLowerCase().includes('code') ? '<i class="fab fa-github"></i>' : ''}
+                                            ${link.label}
+                                        </a>
+                                    `).join('');
+                                } else if (p.links) {
+                                    // Backward compatibility for old format
+                                    let html = '';
+                                    if (p.links.live && p.links.live !== '#') {
+                                        html += `<a href="${p.links.live}" class="btn-main" target="_blank">Launch Live Site</a>`;
+                                    }
+                                    if (p.links.github && p.links.github !== '#') {
+                                        html += `
+                                            <a href="${p.links.github}" class="btn-github" target="_blank" style="text-decoration:none; color:white; padding:1.2rem; border-radius:15px; background:rgba(255,255,255,0.1); font-weight:700; margin-left: 1rem;">
+                                                <i class="fab fa-github"></i> View Code
+                                            </a>`;
+                                    }
+                                    return html;
+                                }
+                                return '';
+                            })()}
                         </div>
                     </div>
                 </div>

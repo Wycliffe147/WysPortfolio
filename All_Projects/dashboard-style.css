@@ -646,6 +646,39 @@ body {
     flex: 1;
 }
 
+.link-row {
+    background: var(--light-alt);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+}
+
+.link-row .form-row {
+    margin-bottom: 0;
+}
+
+.btn-remove {
+    padding: 0.75rem;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-remove:hover {
+    background: var(--danger);
+    color: white;
+    transform: scale(1.05);
+}
+
 .btn-test {
     padding: 0.75rem 1rem;
     background: var(--light-alt);

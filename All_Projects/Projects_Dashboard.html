@@ -209,24 +209,12 @@
                         <input type="text" id="projectSearchKeywords" placeholder="automation, school, library">
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="linkLive">Live Demo URL</label>
-                            <div class="input-with-action">
-                                <input type="text" id="linkLive" placeholder="https://...">
-                                <button type="button" class="btn-test" onclick="testLink('linkLive')">Test</button>
-                            </div>
-                            <span class="validation-hint" id="linkLiveHint">Please enter a valid URL (e.g., https://example.com)</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="linkGithub">GitHub URL</label>
-                            <div class="input-with-action">
-                                <input type="text" id="linkGithub" placeholder="https://github.com/...">
-                                <button type="button" class="btn-test" onclick="testLink('linkGithub')">Test</button>
-                            </div>
-                            <span class="validation-hint" id="linkGithubHint">Please enter a valid GitHub URL</span>
-                        </div>
+                    <div id="linksContainer">
+                        <!-- Dynamic link rows will be added here -->
                     </div>
+                    <button type="button" class="btn-secondary" id="addLinkBtn" style="margin-top: 0.5rem; width: 100%; justify-content: center;">
+                        <i class="fas fa-plus"></i> Add Another Link
+                    </button>
                 </div>
 
                 <div class="form-actions">
