@@ -206,17 +206,6 @@ function clearLinkRows() {
     linksContainer.innerHTML = '';
 }
 
-// URL Validation helper
-function isValidUrl(string) {
-    if (!string || string === '#') return true; // Allow empty or # as "not provided"
-    try {
-        new URL(string);
-        return true;
-    } catch (_) {
-        return false;  
-    }
-}
-
 function clearValidationStates() {
     document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 }
@@ -552,7 +541,6 @@ function updateConnectionStatus(message, type = 'info') {
 
 document.addEventListener('DOMContentLoaded', function() {
     updateConnectionStatus('Connecting to Firebase...');
-    setupRealTimeValidation();
     
     // Check if firebase is loaded
     if (typeof firebase === 'undefined') {
@@ -570,7 +558,10 @@ document.addEventListener('DOMContentLoaded', function() {
             updateStats(projects);
             updateConnectionStatus('✅ Connected to Firebase', 'success');
             // Hide status after 3 seconds if successful
-            setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+            setTimeout(() => { 
+                const statusDiv = document.getElementById('connectionStatus');
+                if (statusDiv) statusDiv.style.display = 'none'; 
+            }, 3000);
         });
     } catch (e) {
         updateConnectionStatus(`❌ Initialization Error: ${e.message}`, 'danger');
