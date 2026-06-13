@@ -6,53 +6,79 @@
 // ============================================
 
 const database = firebase.database();
-const storage = firebase.storage();
 const PROJECTS_PATH = 'projects';
 
 // ============================================
-// Firebase Storage Management
+// Image Processing (Base64 + Compression)
 // ============================================
 
-function handleImageUpload(e) {
+async function handleImageUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-        showNotification('File is too large! Please select an image under 5MB.', 'danger');
-        return;
-    }
-
-    const storageRef = storage.ref(`project-thumbnails/${Date.now()}_${file.name}`);
-    const uploadTask = storageRef.put(file);
 
     const progressContainer = document.getElementById('uploadProgressContainer');
     const progressBar = document.getElementById('uploadProgressBar');
     const uploadStatus = document.getElementById('uploadStatus');
 
     progressContainer.style.display = 'block';
+    uploadStatus.textContent = 'Processing image...';
+    progressBar.style.width = '50%';
 
-    uploadTask.on('state_changed', 
-        (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            progressBar.style.width = progress + '%';
-            uploadStatus.textContent = `Uploading: ${Math.round(progress)}%`;
-        }, 
-        (error) => {
-            console.error('Upload failed:', error);
-            showNotification('Upload failed! Please check your connection or Firebase Storage rules.', 'danger');
-            progressContainer.style.display = 'none';
-        }, 
-        () => {
-            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                document.getElementById('projectImage').value = downloadURL;
-                uploadStatus.textContent = '✅ Upload Complete!';
-                showNotification('Image uploaded successfully!', 'success');
-                // Hide progress after a delay
-                setTimeout(() => { progressContainer.style.display = 'none'; }, 2000);
-            });
-        }
-    );
+    try {
+        const compressedBase64 = await compressImage(file);
+        document.getElementById('projectImage').value = compressedBase64;
+        
+        progressBar.style.width = '100%';
+        uploadStatus.textContent = '✅ Image Optimized!';
+        showNotification('Image processed and optimized!', 'success');
+        
+        setTimeout(() => { progressContainer.style.display = 'none'; }, 2000);
+    } catch (error) {
+        console.error('Processing failed:', error);
+        showNotification('Failed to process image', 'danger');
+        progressContainer.style.display = 'none';
+    }
+}
+
+function compressImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800;
+                const MAX_HEIGHT = 600;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert to base64 with 0.6 quality (60%)
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                resolve(dataUrl);
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
 }
 
 function resetUploadUI() {
