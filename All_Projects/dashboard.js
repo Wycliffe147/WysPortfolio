@@ -351,6 +351,34 @@ document.getElementById('searchProjects').addEventListener('input', function(e) 
 // Event Listeners
 // ============================================
 
+const sidebar = document.querySelector('.sidebar');
+const menuToggle = document.getElementById('menuToggle');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+    });
+}
+
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+    });
+}
+
+// Close sidebar when clicking nav items on mobile
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        }
+    });
+});
+
 document.getElementById('addProjectBtn').addEventListener('click', openAddProjectModal);
 document.getElementById('closeModal').addEventListener('click', closeProjectModal);
 document.getElementById('cancelBtn').addEventListener('click', closeProjectModal);

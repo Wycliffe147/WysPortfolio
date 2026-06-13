@@ -690,11 +690,28 @@ body {
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
-        transition: transform 0.3s ease;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 280px;
     }
 
     .sidebar.active {
         transform: translateX(0);
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 90;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
     }
 
     .main-content {
@@ -702,16 +719,50 @@ body {
         padding: 1rem;
     }
 
+    .mobile-header-top {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--dark);
+        font-size: 1.25rem;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+    }
+
     .dashboard-header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+        align-items: stretch;
+        gap: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
     }
 
     .table-header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+        align-items: stretch;
+        gap: 1.25rem;
+        padding: 1.25rem;
     }
 
     .search-input-dash {
@@ -721,19 +772,51 @@ body {
     .modal-content {
         width: 95%;
         margin: 1rem;
+        border-radius: 16px;
     }
 
-    .projects-table {
-        font-size: 0.875rem;
+    #projectForm {
+        padding: 1.25rem;
+    }
+
+    .form-tabs {
+        overflow-x: auto;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+        white-space: nowrap;
+    }
+
+    /* Table Optimization for Mobile */
+    .projects-table th:nth-child(2),
+    .projects-table td:nth-child(2),
+    .projects-table th:nth-child(3),
+    .projects-table td:nth-child(3) {
+        display: none;
     }
 
     .projects-table th,
     .projects-table td {
-        padding: 0.75rem;
+        padding: 1rem 0.75rem;
+    }
+
+    .project-image-cell img {
+        width: 60px;
+        height: 40px;
     }
 
     .action-buttons {
-        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .action-btn {
+        padding: 0.5rem;
+    }
+
+    .action-btn span {
+        display: none;
     }
 }
 

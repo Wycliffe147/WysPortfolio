@@ -41,7 +41,12 @@
             
             <header class="dashboard-header">
                 <div class="header-left">
-                    <h1>Projects Management</h1>
+                    <div class="mobile-header-top">
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1>Projects Management</h1>
+                    </div>
                     <p class="subtitle">Manage your portfolio projects</p>
                 </div>
                 <button class="btn-primary" id="addProjectBtn">
@@ -49,6 +54,9 @@
                     Add New Project
                 </button>
             </header>
+
+            <!-- Sidebar Overlay -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
             <!-- Stats Cards -->
             <div class="stats-grid">
