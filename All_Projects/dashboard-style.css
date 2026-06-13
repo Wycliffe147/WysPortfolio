@@ -697,6 +697,16 @@ body {
     border-color: var(--primary);
 }
 
+.progress-bar-bg {
+    background: var(--light-alt);
+    border: 1px solid var(--border);
+}
+
+#uploadProgressBar {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
 /* Validation Styles */
 .form-group input.is-invalid {
     border-color: var(--danger);

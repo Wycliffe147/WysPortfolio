@@ -8,6 +8,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <script src="../firebase-config.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -176,8 +177,20 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="projectImage">Thumbnail Image URL *</label>
-                        <input type="text" id="projectImage" required placeholder="../e-library.png">
+                        <label for="projectImage">Thumbnail Image</label>
+                        <div class="input-with-action" style="margin-bottom: 0.5rem;">
+                            <input type="text" id="projectImage" required placeholder="../e-library.png">
+                            <label for="imageUpload" class="btn-secondary" style="margin-bottom: 0; cursor: pointer; white-space: nowrap;">
+                                <i class="fas fa-upload"></i> Upload
+                            </label>
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                        </div>
+                        <div id="uploadProgressContainer" style="display: none; margin-top: 0.5rem;">
+                            <div class="progress-bar-bg" style="height: 6px; background: var(--light-alt); border-radius: 3px; overflow: hidden;">
+                                <div id="uploadProgressBar" style="height: 100%; width: 0%; background: var(--primary); transition: width 0.3s ease;"></div>
+                            </div>
+                            <small id="uploadStatus" style="display: block; margin-top: 4px; color: var(--text-muted); font-size: 0.75rem;">Uploading: 0%</small>
+                        </div>
                     </div>
                 </div>
 

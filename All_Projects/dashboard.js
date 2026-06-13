@@ -6,7 +6,61 @@
 // ============================================
 
 const database = firebase.database();
+const storage = firebase.storage();
 const PROJECTS_PATH = 'projects';
+
+// ============================================
+// Firebase Storage Management
+// ============================================
+
+function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showNotification('File is too large! Please select an image under 5MB.', 'danger');
+        return;
+    }
+
+    const storageRef = storage.ref(`project-thumbnails/${Date.now()}_${file.name}`);
+    const uploadTask = storageRef.put(file);
+
+    const progressContainer = document.getElementById('uploadProgressContainer');
+    const progressBar = document.getElementById('uploadProgressBar');
+    const uploadStatus = document.getElementById('uploadStatus');
+
+    progressContainer.style.display = 'block';
+
+    uploadTask.on('state_changed', 
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            progressBar.style.width = progress + '%';
+            uploadStatus.textContent = `Uploading: ${Math.round(progress)}%`;
+        }, 
+        (error) => {
+            console.error('Upload failed:', error);
+            showNotification('Upload failed! Please check your connection or Firebase Storage rules.', 'danger');
+            progressContainer.style.display = 'none';
+        }, 
+        () => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                document.getElementById('projectImage').value = downloadURL;
+                uploadStatus.textContent = '✅ Upload Complete!';
+                showNotification('Image uploaded successfully!', 'success');
+                // Hide progress after a delay
+                setTimeout(() => { progressContainer.style.display = 'none'; }, 2000);
+            });
+        }
+    );
+}
+
+function resetUploadUI() {
+    const progressContainer = document.getElementById('uploadProgressContainer');
+    const progressBar = document.getElementById('uploadProgressBar');
+    if (progressContainer) progressContainer.style.display = 'none';
+    if (progressBar) progressBar.style.width = '0%';
+}
 
 // Load projects from Firebase
 function loadProjects(callback) {
@@ -262,6 +316,7 @@ function openAddProjectModal() {
     resetTabs();
     clearValidationStates();
     clearLinkRows();
+    resetUploadUI();
     // Start with two default rows for new projects
     addLinkRow('Live Demo', '');
     addLinkRow('GitHub', '');
@@ -278,6 +333,7 @@ function editProject(key) {
     resetTabs();
     clearValidationStates();
     clearLinkRows();
+    resetUploadUI();
     
     // Populate form
     document.getElementById('projectName').value = project.title || '';
@@ -541,6 +597,10 @@ function updateConnectionStatus(message, type = 'info') {
 
 document.addEventListener('DOMContentLoaded', function() {
     updateConnectionStatus('Connecting to Firebase...');
+    
+    // Setup Image Upload listener
+    const imageUpload = document.getElementById('imageUpload');
+    if (imageUpload) imageUpload.addEventListener('change', handleImageUpload);
     
     // Check if firebase is loaded
     if (typeof firebase === 'undefined') {
