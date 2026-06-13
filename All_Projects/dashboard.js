@@ -126,6 +126,33 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// URL Validation helper
+function isValidUrl(string) {
+    if (!string || string === '#') return true; // Allow empty or # as "not provided"
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;  
+    }
+}
+
+// Function to test links in a new tab
+function testLink(inputId) {
+    const url = document.getElementById(inputId).value.trim();
+    if (!url || url === '#') {
+        showNotification('Please enter a URL first', 'info');
+        return;
+    }
+    
+    try {
+        new URL(url);
+        window.open(url, '_blank');
+    } catch (_) {
+        showNotification('Invalid URL. Please include http:// or https://', 'danger');
+    }
+}
+
 // ============================================
 // Modal & Tab Management
 // ============================================
@@ -253,6 +280,19 @@ function confirmDelete() {
 projectForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
+    const liveUrl = document.getElementById('linkLive').value.trim();
+    const githubUrl = document.getElementById('linkGithub').value.trim();
+
+    // Validate URLs
+    if (!isValidUrl(liveUrl)) {
+        showNotification('Please enter a valid Live Demo URL (including http:// or https://)', 'danger');
+        return;
+    }
+    if (!isValidUrl(githubUrl)) {
+        showNotification('Please enter a valid GitHub URL (including http:// or https://)', 'danger');
+        return;
+    }
+
     const project = {
         id: document.getElementById('projectId').value.trim(),
         title: document.getElementById('projectName').value.trim(),
@@ -268,8 +308,8 @@ projectForm.addEventListener('submit', function(e) {
         tech: document.getElementById('projectTags').value.split(',').map(t => t.trim()).filter(t => t),
         searchKeywords: document.getElementById('projectSearchKeywords').value.trim(),
         links: {
-            live: document.getElementById('linkLive').value.trim() || '#',
-            github: document.getElementById('linkGithub').value.trim() || '#'
+            live: liveUrl || '',
+            github: githubUrl || ''
         }
     };
     

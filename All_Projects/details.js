@@ -100,10 +100,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
 
                         <div class="detail-actions">
-                            <a href="${p.links.live}" class="btn-main">Launch Live Site</a>
-                            <a href="${p.links.github}" class="btn-github" target="_blank" style="text-decoration:none; color:white; padding:1.2rem; border-radius:15px; background:rgba(255,255,255,0.1); font-weight:700;">
-                                <i class="fab fa-github"></i> View Code
-                            </a>
+                            ${p.links && p.links.live && p.links.live !== '#' ? 
+                                `<a href="${p.links.live}" class="btn-main" target="_blank">Launch Live Site</a>` : ''}
+                            ${p.links && p.links.github && p.links.github !== '#' ? 
+                                `<a href="${p.links.github}" class="btn-github" target="_blank" style="text-decoration:none; color:white; padding:1.2rem; border-radius:15px; background:rgba(255,255,255,0.1); font-weight:700;">
+                                    <i class="fab fa-github"></i> View Code
+                                </a>` : ''}
                         </div>
                     </div>
                 </div>

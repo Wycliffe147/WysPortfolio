@@ -637,6 +637,33 @@ body {
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
+.input-with-action {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input-with-action input {
+    flex: 1;
+}
+
+.btn-test {
+    padding: 0.75rem 1rem;
+    background: var(--light-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
+.btn-test:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
 .form-group small {
     display: block;
     margin-top: 0.5rem;

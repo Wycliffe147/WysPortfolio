@@ -212,11 +212,17 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="linkLive">Live Demo URL</label>
-                            <input type="text" id="linkLive" placeholder="#">
+                            <div class="input-with-action">
+                                <input type="text" id="linkLive" placeholder="https://...">
+                                <button type="button" class="btn-test" onclick="testLink('linkLive')">Test</button>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="linkGithub">GitHub URL</label>
-                            <input type="text" id="linkGithub" placeholder="https://github.com/...">
+                            <div class="input-with-action">
+                                <input type="text" id="linkGithub" placeholder="https://github.com/...">
+                                <button type="button" class="btn-test" onclick="testLink('linkGithub')">Test</button>
+                            </div>
                         </div>
                     </div>
                 </div>
