@@ -393,7 +393,7 @@ header.scrolled #mainNav.mobile-active ul#navLinks li {
 .hero {
     padding: 100px 0;
     text-align: center;
-    background-image: linear-gradient(rgba(52, 152, 219, 0.55), rgba(52, 152, 219, 0.55)), url('../assets/profile.png');
+    background-image: linear-gradient(rgba(20, 70, 110, 0.75), rgba(20, 70, 110, 0.75)), url('../assets/profile.png');
     background-size: cover;
     background-position: center 30%;
     background-repeat: no-repeat;
@@ -403,12 +403,14 @@ header.scrolled #mainNav.mobile-active ul#navLinks li {
 .hero h1 {
     font-size: 48px;
     margin-bottom: 20px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .hero p {
     font-size: 20px;
     max-width: 700px;
     margin: 0 auto 30px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .btn {
