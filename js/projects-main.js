@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         logoElement.addEventListener('dblclick', (e) => {
             e.preventDefault();
-            window.location.href = 'Projects_Dashboard.html';
+            window.location.href = 'projects-dashboard.html';
         });
 
         logoElement.addEventListener('click', () => {

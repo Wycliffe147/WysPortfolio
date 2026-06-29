@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectId = urlParams.get('id');
 
     if (!projectId) {
-        window.location.href = 'index.html';
+        window.location.href = 'projects.html';
         return;
     }
 
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(projects => {
                     const project = projects.find(p => p.id === projectId);
                     if (!project) {
-                        projectDetail.innerHTML = '<h1>Project not found</h1><a href="index.html">Back to Showcase</a>';
+                        projectDetail.innerHTML = '<h1>Project not found</h1><a href="projects.html">Back to Showcase</a>';
                         return;
                     }
                     renderDetails(project);

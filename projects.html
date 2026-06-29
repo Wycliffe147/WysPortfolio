@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Details - Wy's Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+    <title>All Projects - Wy's Portfolio (Design 3)</title>
+    <link rel="stylesheet" href="css/projects-style.css">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <script src="../firebase-config.js"></script>
+    <script src="js/firebase-config.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="details-page dark-mode">
+<body class="dark-mode">
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">Wy's Portfolio</div>
+                <div class="logo" id="logoElement" title="Double-click to access dash">Wy's Portfolio</div>
                 <nav>
                     <ul>
-                        <li><a href="index.html">Back to Showcase</a></li>
+                        <li><a href="projects.html">Home</a></li>
                         <li>
                             <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode" style="background:none; border:none; color:white; cursor:pointer; margin-left:1.5rem; display:flex; align-items:center;">
                                 <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -43,11 +43,41 @@
         </div>
     </header>
 
-    <main id="projectDetail" class="project-detail-content">
-        <!-- Dynamically populated by details.js -->
-        <div class="loader-container">
-            <div class="loader"></div>
-            <p>Unfolding the story...</p>
+    <section class="hero">
+        <div class="container">
+            <h1>My Creative <span>Showcase</span></h1>
+            <p>Explore a collection of my DIY projects, software tools, and educational content.</p>
+            <div class="search-container">
+                <input type="text" class="search-input" id="projectSearch" placeholder="Search by name, category, or tech...">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section class="filters">
+        <div class="container">
+            <div class="filter-group" id="filterGroup">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="Web App">Web Apps</button>
+                <button class="filter-btn" data-category="Tool">Tools</button>
+                <button class="filter-btn" data-category="Mobile">Mobile</button>
+                <button class="filter-btn" data-category="AI Tool">AI Tools</button>
+            </div>
+        </div>
+    </section>
+
+    <main class="grid-section">
+        <div class="container">
+            <div id="bentoGrid" class="bento-grid">
+                <!-- Loaded via main.js -->
+            </div>
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-search-minus"></i>
+                <p>No matches found in the gallery.</p>
+            </div>
         </div>
     </main>
 
@@ -57,6 +87,6 @@
         </div>
     </footer>
 
-    <script src="details.js"></script>
+    <script src="js/projects-main.js"></script>
 </body>
 </html>

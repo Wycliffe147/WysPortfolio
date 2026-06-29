@@ -3,7 +3,7 @@
     "id": "e-library",
     "title": "E-Library Platform",
     "size": "large", 
-    "thumbnail": "../e-library.png",
+    "thumbnail": "assets/e-library.png",
     "category": "Web App",
     "shortDesc": "A digital sanctuary for knowledge, managing 10k+ resources.",
     "story": {
@@ -18,7 +18,7 @@
     "id": "star-pdf",
     "title": "Star Search Engine",
     "size": "medium", 
-    "thumbnail": "../StarPdf.png",
+    "thumbnail": "assets/StarPdf.png",
     "category": "Tool",
     "shortDesc": "Instant retrieval system for PDF data indexing.",
     "story": {
