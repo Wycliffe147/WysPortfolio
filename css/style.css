@@ -393,10 +393,11 @@ header.scrolled #mainNav.mobile-active ul#navLinks li {
 .hero {
     padding: 100px 0;
     text-align: center;
-    background-image: linear-gradient(rgba(20, 70, 110, 0.75), rgba(20, 70, 110, 0.75)), url('../assets/profile.png');
+    background-color: var(--accent-color);
     background-size: cover;
     background-position: center 30%;
     background-repeat: no-repeat;
+    transition: background-image 0.8s ease-in-out;
     color: white;
 }
 

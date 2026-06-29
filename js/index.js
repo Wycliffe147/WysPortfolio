@@ -1,3 +1,42 @@
+// Hero background rotation
+// Fetches the list of images in assets/hero-bg/ via the API route.
+// If none exist, the hero keeps its flat fallback color (set in CSS).
+// If one exists, it's shown statically. If multiple exist, they rotate.
+(function setupHeroBackground() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    const OVERLAY = 'linear-gradient(rgba(20, 70, 110, 0.75), rgba(20, 70, 110, 0.75))';
+    const ROTATE_INTERVAL_MS = 7000;
+
+    fetch('/api/hero-bg')
+        .then(res => res.json())
+        .then(data => {
+            const images = Array.isArray(data.images) ? data.images : [];
+            if (images.length === 0) {
+                // No images found — leave the CSS fallback background-color as is.
+                return;
+            }
+
+            let index = 0;
+            const applyImage = (src) => {
+                hero.style.backgroundImage = `${OVERLAY}, url('${src}')`;
+            };
+
+            applyImage(images[index]);
+
+            if (images.length > 1) {
+                setInterval(() => {
+                    index = (index + 1) % images.length;
+                    applyImage(images[index]);
+                }, ROTATE_INTERVAL_MS);
+            }
+        })
+        .catch(() => {
+            // API unreachable — leave the CSS fallback background-color as is.
+        });
+})();
+
 // Add smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
