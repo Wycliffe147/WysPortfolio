@@ -1,0 +1,268 @@
+export interface ProjectItem {
+  id: string;
+  title: string;
+  tagline: string;
+  description: string;
+  category: "Client & Business" | "Systems & Automation" | "Edge & Web" | "AI & Desktop";
+  infra: "Cloudflare" | "Render" | "Vercel" | "Local/Linux" | "Multi-Cloud";
+  tech: string[];
+  thumbnail: string;
+  logo: string;
+  featured?: boolean;
+  links: {
+    live?: string;
+    github?: string;
+  };
+  metrics?: string;
+  story?: {
+    challenge: string;
+    solution: string;
+    impact: string;
+  };
+}
+
+export interface ClientPartner {
+  name: string;
+  role: string;
+  organization: string;
+  domain?: string;
+  badge: string;
+  quote: string;
+  logo: string;
+  avatarText: string;
+}
+
+export const CLIENT_PARTNERS: ClientPartner[] = [
+  {
+    name: "RGM Malawi Ministries",
+    role: "Leadership & Media Team",
+    organization: "RGM Malawi",
+    domain: "rgmmalawi.org",
+    badge: "Cloudflare D1 & Pages",
+    logo: "/logos/rgm.png",
+    quote: "Wycliffe built a high-speed, localized portal for our nationwide community with rock-solid uptime and effortless content distribution.",
+    avatarText: "RG"
+  },
+  {
+    name: "Pamthunzi Electronics",
+    role: "Retail & Operations",
+    organization: "Pamthunzi Retail",
+    domain: "pamthunzi-electronics.pages.dev",
+    badge: "E-Commerce & Auth Backend",
+    logo: "/logos/pamthunzi.png",
+    quote: "Transformed our inventory and stock discovery into a fast, mobile-friendly catalog that customers find effortless to navigate.",
+    avatarText: "PE"
+  },
+  {
+    name: "School Administration Network",
+    role: "Academic Directors",
+    organization: "Secondary Schools Malawi",
+    domain: "school-os-mw",
+    badge: "School OS & WhatsApp Dispatch",
+    logo: "/logos/reportgen.png",
+    quote: "The automated report card engine and WhatsApp dispatch eliminated weeks of tedious paperwork. Parents receive grades immediately on their phones.",
+    avatarText: "SO"
+  },
+  {
+    name: "Wamaka Rice",
+    role: "Agribusiness & Brand",
+    organization: "Wamaka Agro",
+    domain: "wamaka-rice",
+    badge: "Brand Identity & Web Assets",
+    logo: "/logos/wamaka.png",
+    quote: "Delivered distinct digital assets and branding that elevated our agricultural produce in the regional marketplace.",
+    avatarText: "WR"
+  },
+  {
+    name: "DigiHelp Community",
+    role: "Digital Services & Support",
+    organization: "DigiHelp Malawi",
+    domain: "digihelp-site.pages.dev",
+    badge: "Cloudflare Edge",
+    logo: "/logos/digihelp.svg",
+    quote: "An accessible, lightweight web infrastructure helping students and citizens locate technical assistance with minimal mobile data.",
+    avatarText: "DH"
+  }
+];
+
+export const PROJECTS: ProjectItem[] = [
+  {
+    id: "school-os-mw",
+    title: "School OS Malawi",
+    tagline: "Comprehensive School Management, Payments & Parent Portal",
+    description: "An educational management system built for Malawian institutions, streamlining student records, fee collection, and digital discovery.",
+    category: "Systems & Automation",
+    infra: "Render",
+    tech: ["Node.js", "Express", "MongoDB", "Render", "Tailwind CSS"],
+    thumbnail: "/e-library.png",
+    logo: "/logos/reportgen.png",
+    featured: true,
+    metrics: "Active School Deployment",
+    links: {
+      github: "https://github.com/Wycliffe147/school-os-mw"
+    },
+    story: {
+      challenge: "Schools struggled with fragmented spreadsheets, manual fee tracking, and slow report generation.",
+      solution: "Engineered a unified management platform with automated fee tracking and accessible portals.",
+      impact: "Streamlined administrative burden by over 70% and gave parents direct digital visibility into academic progress."
+    }
+  },
+  {
+    id: "report-generator-web",
+    title: "Automated Report Card & WhatsApp Dispatcher",
+    tagline: "Student PDF Report Engine with WhatsApp Baileys Integration",
+    description: "High-speed batch report card generator that merges grades, renders secure PDF report cards, and automatically dispatches them directly to parents via WhatsApp.",
+    category: "Systems & Automation",
+    infra: "Render",
+    tech: ["Node.js", "Baileys WhatsApp API", "pdf-lib", "Express", "Render"],
+    thumbnail: "/ReportGenICO.png",
+    logo: "/logos/reportgen.png",
+    featured: true,
+    metrics: "Thousands of PDFs Dispatched",
+    links: {
+      github: "https://github.com/Wycliffe147/report-generator-web"
+    },
+    story: {
+      challenge: "Printing physical report cards for thousands of students cost schools heavily in paper and took weeks to reach guardians.",
+      solution: "Created an automated pipeline using pdf-lib for dynamic report generation and Baileys socket integration for direct WhatsApp delivery.",
+      impact: "Reduced distribution time from 2 weeks to under 30 minutes with zero paper wastage."
+    }
+  },
+  {
+    id: "rgm-site",
+    title: "RGM Malawi Portal",
+    tagline: "Official Ministry Portal & Database on Cloudflare D1",
+    description: "Edge-hosted community platform with serverless SQLite database bindings, event calendars, and publication archive.",
+    category: "Client & Business",
+    infra: "Cloudflare",
+    tech: ["Cloudflare Pages", "Cloudflare D1 (SQLite)", "Wrangler", "JavaScript"],
+    thumbnail: "/logos/rgm.png",
+    logo: "/logos/rgm.png",
+    featured: true,
+    metrics: "Custom Domain with Sub-50ms Edge Response",
+    links: {
+      live: "https://rgmmalawi.org",
+      github: "https://github.com/Wycliffe147/rgm-site"
+    },
+    story: {
+      challenge: "Needed a reliable, zero-maintenance web presence capable of serving thousands of congregants with low latency across Southern Africa.",
+      solution: "Architected purely on Cloudflare edge infrastructure utilizing Cloudflare D1 serverless database.",
+      impact: "Zero hosting cost, 100% uptime, and instant global page delivery without managing any virtual servers."
+    }
+  },
+  {
+    id: "pamthunzi-electronics",
+    title: "Pamthunzi Electronics Storefront",
+    tagline: "Commercial Retail Catalog with JWT Admin & Inventory",
+    description: "Fast e-commerce and retail stock catalog designed for speedy asset loading on mobile devices, with token-secured administrative controls.",
+    category: "Client & Business",
+    infra: "Cloudflare",
+    tech: ["Cloudflare Pages", "JWT Authentication", "JavaScript", "Responsive Design"],
+    thumbnail: "/logos/pamthunzi.png",
+    logo: "/logos/pamthunzi.png",
+    featured: true,
+    metrics: "Commercial Retail in Production",
+    links: {
+      live: "https://pamthunzi-electronics.pages.dev",
+      github: "https://github.com/Wycliffe147/pamthunzi-electronics"
+    },
+    story: {
+      challenge: "Local retail electronics customers needed to inspect stock availability and specs before visiting physical shops.",
+      solution: "Built a lightning-quick mobile catalog with instant item search and a lightweight backend for price updates.",
+      impact: "Boosted customer inquiries and streamlined sales operations."
+    }
+  },
+  {
+    id: "wylibrary",
+    title: "WyLibrary Knowledge Engine",
+    tagline: "Large-Scale Educational Digital Sanctuary & Asset Delivery",
+    description: "Curated digital repository managing 10,000+ educational resources and books with low-bandwidth offline caching and instant previews.",
+    category: "Edge & Web",
+    infra: "Multi-Cloud",
+    tech: ["Cloudflare Pages", "Cloudflare R2", "Node.js", "Firebase RTDB"],
+    thumbnail: "/e-library.png",
+    logo: "/logos/wylibrary.png",
+    featured: true,
+    metrics: "10,000+ Indexed Resources",
+    links: {
+      live: "https://wylibrary.org",
+      github: "https://github.com/Wycliffe147/e-library"
+    },
+    story: {
+      challenge: "High data costs and inconsistent connections prevented students from reliably accessing key reference textbooks.",
+      solution: "Constructed an edge-cached digital library backed by Cloudflare R2 object storage with progressive download buffers.",
+      impact: "Provides students with frictionless access to critical learning materials."
+    }
+  },
+  {
+    id: "wamaka-rice",
+    title: "Wamaka Rice Digital Brand",
+    tagline: "Modern Agribusiness Identity & Digital Presence",
+    description: "Agricultural commerce portal and visual brand identity highlighting domestic Malawian rice production and distribution channels.",
+    category: "Client & Business",
+    infra: "Cloudflare",
+    tech: ["Cloudflare Pages", "SVG Design", "Tailwind CSS", "JavaScript"],
+    thumbnail: "/logos/wamaka.png",
+    logo: "/logos/wamaka.png",
+    featured: true,
+    metrics: "Regional Agriculture Brand",
+    links: {
+      github: "https://github.com/Wycliffe147/wamaka-rice"
+    },
+    story: {
+      challenge: "An emerging agricultural producer needed premium digital branding to reach wholesalers and distributors.",
+      solution: "Created clean visual identities, vector marks, and a fast product landing showcase.",
+      impact: "Elevated brand credibility and enabled direct commercial order inquiries."
+    }
+  },
+  {
+    id: "star-pdf-search",
+    title: "Star PDF Search Engine",
+    tagline: "High-Speed Client-Side PDF Content Indexer",
+    description: "Instantaneous textual retrieval engine parsing through multi-thousand-page documents with PDF.js client-side memory indexing.",
+    category: "Systems & Automation",
+    infra: "Cloudflare",
+    tech: ["JavaScript", "PDF.js", "Cloudflare Pages", "Web Workers"],
+    thumbnail: "/StarPdf.png",
+    logo: "/logos/starpdf.png",
+    featured: false,
+    metrics: "Instant In-Browser Search",
+    links: {
+      live: "https://star-pdfs.pages.dev",
+      github: "https://github.com/Wycliffe147/Strar-pdf-search-website"
+    }
+  },
+  {
+    id: "jarvis-omarchy",
+    title: "JARVIS Desktop AI & System Agent",
+    tagline: "Native Linux Voice & Automation Assistant",
+    description: "Modular desktop AI companion tailored for Linux (Omarchy / Hyprland) with natural voice synthesis, command execution, and workspace shortcuts.",
+    category: "AI & Desktop",
+    infra: "Local/Linux",
+    tech: ["Python", "FastAPI / Socket", "PyTTSx3", "Hyprland IPC", "Linux CLI"],
+    thumbnail: "/profile.png",
+    logo: "/profile.png",
+    featured: true,
+    metrics: "Native Linux Subsystem",
+    links: {
+      github: "https://github.com/Wycliffe147/jarvis-assistant"
+    }
+  },
+  {
+    id: "digihelp-site",
+    title: "DigiHelp Community Hub",
+    tagline: "Public Digital Services & Knowledge Base",
+    description: "Digital literacy and technical assistance platform deployed on Cloudflare Pages providing localized guides and tools.",
+    category: "Client & Business",
+    infra: "Cloudflare",
+    tech: ["Cloudflare Pages", "HTML5", "Modern CSS", "Edge DNS"],
+    thumbnail: "/logos/digihelp.svg",
+    logo: "/logos/digihelp.svg",
+    featured: false,
+    metrics: "Low Bandwidth Accessible",
+    links: {
+      live: "https://digihelp-site.pages.dev",
+      github: "https://github.com/Wycliffe147/digihelp-site"
+    }
+  }
+];
