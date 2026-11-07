@@ -493,45 +493,54 @@ export default function HomePage() {
                   className="premium-card flex flex-col justify-between overflow-hidden group"
                 >
                   <div>
-                    {/* Visual gradient header banner with framed mock and real logo */}
-                    <div className={`relative h-40 bg-gradient-to-br ${bannerBg} p-4 border-b border-slate-100 flex flex-col justify-between overflow-hidden`}>
-                      <div className="flex items-center justify-between">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border backdrop-blur-xs ${infra.bg}`}>
+                    {/* Header banner filled with project logo over ambient gradient */}
+                    <div className={`relative h-48 sm:h-52 bg-gradient-to-br ${bannerBg} p-4 border-b border-slate-100 flex flex-col justify-between overflow-hidden`}>
+                      {/* Ambient enlarged logo watermark */}
+                      <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+                        <Image
+                          src={project.logo}
+                          alt=""
+                          fill
+                          className="object-cover blur-xl opacity-20 scale-125 transition-transform duration-500 group-hover:scale-135"
+                        />
+                      </div>
+
+                      {/* Prominent logo filling the canvas */}
+                      <div className="absolute inset-4 sm:inset-6 flex items-center justify-center">
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={project.logo}
+                            alt={`${project.title} logo`}
+                            fill
+                            className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-sm"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Overlay chips */}
+                      <div className="flex items-center justify-between relative z-10">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border backdrop-blur-md ${infra.bg} shadow-xs`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${infra.dot}`} />
                           {infra.name}
                         </span>
 
                         {project.metrics && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/80 text-slate-700 backdrop-blur-xs border border-white">
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/90 text-slate-800 backdrop-blur-md border border-white/80 shadow-xs">
                             {project.metrics}
                           </span>
                         )}
                       </div>
-
-                      {/* Mock application window with project logo */}
-                      <div className="bg-white/90 backdrop-blur-xs rounded-xl p-3 border border-white/80 shadow-xs flex items-center gap-3">
-                        <div className="relative w-9 h-9 rounded-lg bg-slate-50 border border-slate-100 p-1 flex items-center justify-center shrink-0">
-                          <Image
-                            src={project.logo}
-                            alt={`${project.title} logo`}
-                            width={32}
-                            height={32}
-                            className="object-contain"
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-display font-bold text-slate-900 text-xs sm:text-sm truncate">
-                            {project.title}
-                          </h4>
-                          <span className="text-[10px] text-slate-500 truncate block">
-                            {project.tagline}
-                          </span>
-                        </div>
-                      </div>
+                      <div className="relative z-10"></div>
                     </div>
 
                     {/* Card Content */}
                     <div className="p-6">
+                      <h3 className="font-display font-bold text-slate-900 text-lg leading-snug group-hover:text-violet-700 transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 font-medium mt-1 mb-3">
+                        {project.tagline}
+                      </p>
                       <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed mb-4">
                         {project.description}
                       </p>
