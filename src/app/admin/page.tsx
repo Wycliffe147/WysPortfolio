@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/firebase";
 import { ref, onValue, push, remove, set } from "firebase/database";
@@ -17,7 +18,10 @@ import {
   ArrowLeft,
   Cloud,
   Layers,
-  Sparkles
+  Sparkles,
+  Palette,
+  Sliders,
+  Eye
 } from "lucide-react";
 
 interface FirebaseProject {
@@ -32,7 +36,33 @@ interface FirebaseProject {
   };
   infra?: string;
   thumbnail?: string;
+  logo?: string;
+  gradient?: string;
 }
+
+const BRAND_GRADIENT_PRESETS = [
+  { name: "Gold & Royal (RGM)", value: "from-amber-100 via-amber-50 to-indigo-50", preview: "#fef3c7" },
+  { name: "Crimson & Retail (Pamthunzi)", value: "from-rose-100 via-slate-50 to-amber-50", preview: "#ffe4e6" },
+  { name: "Harvest Green (Wamaka)", value: "from-emerald-100 via-lime-50 to-amber-50", preview: "#d1fae5" },
+  { name: "Knowledge Sky (WyLibrary)", value: "from-sky-100 via-indigo-50 to-blue-50", preview: "#e0f2fe" },
+  { name: "Academic Violet (School OS)", value: "from-indigo-100 via-purple-50 to-emerald-50", preview: "#e0e7ff" },
+  { name: "Star Gold (Star PDF)", value: "from-amber-100 via-yellow-50 to-sky-50", preview: "#fef08a" },
+  { name: "Cyber Purple (JARVIS)", value: "from-purple-100 via-indigo-50 to-slate-100", preview: "#f3e8ff" },
+  { name: "Digital Cyan (DigiHelp)", value: "from-cyan-100 via-sky-50 to-emerald-50", preview: "#cffafe" },
+  { name: "Neutral Studio Frost", value: "from-slate-100 via-slate-50 to-zinc-100", preview: "#f1f5f9" }
+];
+
+const PRESET_LOGOS = [
+  { name: "RGM Malawi", path: "/logos/rgm.png" },
+  { name: "Pamthunzi Retail", path: "/logos/pamthunzi.png" },
+  { name: "Wamaka Rice", path: "/logos/wamaka.png" },
+  { name: "WyLibrary", path: "/logos/wylibrary.png" },
+  { name: "Report Generator", path: "/logos/reportgen.png" },
+  { name: "Star PDF", path: "/logos/starpdf.png" },
+  { name: "DigiHelp", path: "/logos/digihelp.svg" },
+  { name: "Brand Emblem", path: "/Logo v2.2.png" },
+  { name: "Profile Photo", path: "/profile.png" }
+];
 
 export default function AdminDashboard() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -47,16 +77,35 @@ export default function AdminDashboard() {
   // Projects State
   const [projects, setProjects] = useState<Record<string, FirebaseProject>>({});
   const [isAddingProject, setIsAddingProject] = useState(false);
+
+  // Gradient control mode
+  const [gradientMode, setGradientMode] = useState<"preset" | "manual">("preset");
+  const [manualColorStart, setManualColorStart] = useState("#fed7aa");
+  const [manualColorEnd, setManualColorEnd] = useState("#e0e7ff");
+  const [manualAngle, setManualAngle] = useState("135deg");
+
   const [newProject, setNewProject] = useState<FirebaseProject>({
     title: "",
     category: "Systems & Automation",
     shortDesc: "",
     tech: [],
     infra: "Cloudflare",
-    links: { live: "", github: "" }
+    links: { live: "", github: "" },
+    logo: "/logos/rgm.png",
+    gradient: "from-amber-100 via-amber-50 to-indigo-50"
   });
   const [techInput, setTechInput] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
+
+  // Update manual gradient whenever manual colors change
+  useEffect(() => {
+    if (gradientMode === "manual") {
+      setNewProject((prev) => ({
+        ...prev,
+        gradient: `linear-gradient(${manualAngle}, ${manualColorStart}, ${manualColorEnd})`
+      }));
+    }
+  }, [gradientMode, manualColorStart, manualColorEnd, manualAngle]);
 
   // Check login session
   useEffect(() => {
@@ -143,7 +192,9 @@ export default function AdminDashboard() {
         shortDesc: "",
         tech: [],
         infra: "Cloudflare",
-        links: { live: "", github: "" }
+        links: { live: "", github: "" },
+        logo: "/logos/rgm.png",
+        gradient: "from-amber-100 via-amber-50 to-indigo-50"
       });
       setTechInput("");
       setTimeout(() => setStatusMsg(""), 4000);
@@ -179,7 +230,7 @@ export default function AdminDashboard() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 relative">
-        <div className="fixed inset-0 pointer-events-none bg-mesh-pattern opacity-60 z-0" />
+        <div className="mesh-backdrop opacity-60" aria-hidden="true" />
 
         <div className="relative z-10 w-full max-w-md">
           <Link
@@ -237,10 +288,16 @@ export default function AdminDashboard() {
     );
   }
 
+  const currentGradient = newProject.gradient || "from-amber-100 via-amber-50 to-indigo-50";
+  const isCustomInlinePreview =
+    currentGradient.startsWith("linear-gradient") ||
+    currentGradient.startsWith("#") ||
+    currentGradient.startsWith("rgb");
+
   // Unified Admin View
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 relative">
-      <div className="fixed inset-0 pointer-events-none bg-mesh-pattern opacity-50 z-0" />
+      <div className="mesh-backdrop opacity-50" aria-hidden="true" />
 
       {/* Top Navbar */}
       <header className="border-b border-slate-200/90 bg-white/90 backdrop-blur-md sticky top-0 z-30 shadow-xs">
@@ -343,10 +400,10 @@ export default function AdminDashboard() {
                   Add Project to Firebase Database
                 </h3>
                 <p className="text-slate-600 text-xs mb-6">
-                  Items created here will instantly sync to your live Firebase Realtime Database.
+                  Items created here will instantly sync to your live European Firebase Realtime Database.
                 </p>
 
-                <form onSubmit={handleCreateProject} className="space-y-4">
+                <form onSubmit={handleCreateProject} className="space-y-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs uppercase tracking-wider text-slate-700 mb-1 font-bold">
@@ -398,6 +455,25 @@ export default function AdminDashboard() {
                         <option value="Vercel">Vercel (Edge/Frontend)</option>
                         <option value="Local/Linux">Local / Linux Subsystem</option>
                         <option value="Multi-Cloud">Multi-Cloud</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs uppercase tracking-wider text-slate-700 mb-1 font-bold">
+                        Project Logo Asset
+                      </label>
+                      <select
+                        value={newProject.logo}
+                        onChange={(e) =>
+                          setNewProject({ ...newProject, logo: e.target.value })
+                        }
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
+                      >
+                        {PRESET_LOGOS.map((l) => (
+                          <option key={l.path} value={l.path}>
+                            {l.name} ({l.path})
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -467,7 +543,184 @@ export default function AdminDashboard() {
                     ></textarea>
                   </div>
 
-                  <div className="flex justify-end gap-3 pt-2">
+                  {/* BRAND GRADIENT CONTROLS */}
+                  <div className="pt-2 border-t border-slate-100">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                      <div>
+                        <span className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                          <Palette className="w-4 h-4 text-indigo-600" />
+                          Card Header Brand Gradient
+                        </span>
+                        <span className="text-xs text-slate-500 block">
+                          Choose an auto brand color palette or mix custom colors manually.
+                        </span>
+                      </div>
+
+                      <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-100">
+                        <button
+                          type="button"
+                          onClick={() => setGradientMode("preset")}
+                          className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                            gradientMode === "preset"
+                              ? "bg-white text-indigo-700 shadow-xs"
+                              : "text-slate-600 hover:text-slate-900"
+                          }`}
+                        >
+                          Auto Presets
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setGradientMode("manual")}
+                          className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                            gradientMode === "manual"
+                              ? "bg-white text-indigo-700 shadow-xs"
+                              : "text-slate-600 hover:text-slate-900"
+                          }`}
+                        >
+                          Manual Mix
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Mode 1: Auto Presets */}
+                    {gradientMode === "preset" ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {BRAND_GRADIENT_PRESETS.map((p) => {
+                          const isSelected = newProject.gradient === p.value;
+                          return (
+                            <button
+                              key={p.name}
+                              type="button"
+                              onClick={() => setNewProject({ ...newProject, gradient: p.value })}
+                              className={`p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
+                                isSelected
+                                  ? "border-indigo-600 bg-indigo-50/70 ring-1 ring-indigo-600"
+                                  : "border-slate-200 bg-white hover:border-slate-300"
+                              }`}
+                            >
+                              <span
+                                className="w-5 h-5 rounded-md border border-slate-300 shrink-0"
+                                style={{ backgroundColor: p.preview }}
+                              />
+                              <span className="text-xs font-semibold text-slate-800 truncate">
+                                {p.name}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      /* Mode 2: Manual Mix */
+                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs uppercase tracking-wider text-slate-600 mb-1 font-bold">
+                              Start Color
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={manualColorStart}
+                                onChange={(e) => setManualColorStart(e.target.value)}
+                                className="w-10 h-9 p-0.5 rounded border border-slate-300 cursor-pointer"
+                              />
+                              <input
+                                type="text"
+                                value={manualColorStart}
+                                onChange={(e) => setManualColorStart(e.target.value)}
+                                className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded text-xs font-mono"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs uppercase tracking-wider text-slate-600 mb-1 font-bold">
+                              End Color
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={manualColorEnd}
+                                onChange={(e) => setManualColorEnd(e.target.value)}
+                                className="w-10 h-9 p-0.5 rounded border border-slate-300 cursor-pointer"
+                              />
+                              <input
+                                type="text"
+                                value={manualColorEnd}
+                                onChange={(e) => setManualColorEnd(e.target.value)}
+                                className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded text-xs font-mono"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs uppercase tracking-wider text-slate-600 mb-1 font-bold">
+                              Gradient Angle
+                            </label>
+                            <select
+                              value={manualAngle}
+                              onChange={(e) => setManualAngle(e.target.value)}
+                              className="w-full px-2 py-2 bg-white border border-slate-200 rounded text-xs font-medium"
+                            >
+                              <option value="135deg">135° (Diagonal)</option>
+                              <option value="90deg">90° (Left to Right)</option>
+                              <option value="180deg">180° (Top to Bottom)</option>
+                              <option value="45deg">45° (Angled Up)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs uppercase tracking-wider text-slate-600 mb-1 font-bold">
+                            Custom CSS / Tailwind Override
+                          </label>
+                          <input
+                            type="text"
+                            value={newProject.gradient}
+                            onChange={(e) => setNewProject({ ...newProject, gradient: e.target.value })}
+                            placeholder="e.g. from-indigo-200 to-rose-100 or linear-gradient(...)"
+                            className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* LIVE CARD PREVIEW BOX */}
+                    <div className="mt-4 pt-3 border-t border-slate-100">
+                      <div className="flex items-center gap-2 mb-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        <Eye className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Live Card Header Preview</span>
+                      </div>
+
+                      <div
+                        className={`h-36 rounded-2xl border border-slate-200 relative overflow-hidden flex items-center justify-center ${
+                          !isCustomInlinePreview ? `bg-gradient-to-br ${currentGradient}` : ""
+                        }`}
+                        style={isCustomInlinePreview ? { background: currentGradient } : undefined}
+                      >
+                        {/* Overlay chips */}
+                        <div className="absolute top-3 left-3 z-10">
+                          <span className="px-2.5 py-0.5 rounded-full bg-white/90 text-slate-800 text-[10px] font-bold border border-white/80 shadow-xs">
+                            {newProject.infra || "Cloudflare"}
+                          </span>
+                        </div>
+
+                        {/* Centered logo preview */}
+                        {newProject.logo && (
+                          <div className="relative w-24 h-24">
+                            <Image
+                              src={newProject.logo}
+                              alt="Logo Preview"
+                              fill
+                              className="object-contain drop-shadow-sm"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
                     <button
                       type="button"
                       onClick={() => setIsAddingProject(false)}
@@ -506,77 +759,105 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(projects).map(([key, item]) => (
-                  <div
-                    key={key}
-                    className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                          {item.infra || "Cloudflare"}
-                        </span>
-                        <span className="text-[11px] text-slate-500 font-medium">
-                          {item.category}
-                        </span>
-                      </div>
+                {Object.entries(projects).map(([key, item]) => {
+                  const cardGradient = item.gradient || "from-amber-100 via-amber-50 to-indigo-50";
+                  const isCustomCardInline =
+                    cardGradient.startsWith("linear-gradient") ||
+                    cardGradient.startsWith("#") ||
+                    cardGradient.startsWith("rgb");
 
-                      <h4 className="text-base font-bold text-slate-900 mb-2">
-                        {item.title}
-                      </h4>
-                      <p className="text-slate-600 text-xs leading-relaxed mb-4 line-clamp-3">
-                        {item.shortDesc}
-                      </p>
+                  return (
+                    <div
+                      key={key}
+                      className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                    >
+                      <div>
+                        {/* Visual Banner */}
+                        <div
+                          className={`h-28 relative flex items-center justify-center p-3 border-b border-slate-100 ${
+                            !isCustomCardInline ? `bg-gradient-to-br ${cardGradient}` : ""
+                          }`}
+                          style={isCustomCardInline ? { background: cardGradient } : undefined}
+                        >
+                          <span className="absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-slate-800 border border-white/80">
+                            {item.infra || "Cloudflare"}
+                          </span>
 
-                      {item.tech && (
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {item.tech.map((t, idx) => (
-                            <span
-                              key={idx}
-                              className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium"
-                            >
-                              {t}
-                            </span>
-                          ))}
+                          {item.logo && (
+                            <div className="relative w-16 h-16">
+                              <Image
+                                src={item.logo}
+                                alt={item.title}
+                                fill
+                                className="object-contain drop-shadow-xs"
+                              />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
 
-                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-3">
-                        {item.links?.live && (
-                          <a
-                            href={item.links.live}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1"
-                          >
-                            <span>Live</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
-                        {item.links?.github && (
-                          <a
-                            href={item.links.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-slate-600 hover:text-slate-900 font-medium"
-                          >
-                            GitHub
-                          </a>
-                        )}
+                        <div className="p-5">
+                          <span className="text-[11px] text-indigo-600 font-semibold uppercase tracking-wider block mb-1">
+                            {item.category}
+                          </span>
+
+                          <h4 className="text-base font-bold text-slate-900 mb-2">
+                            {item.title}
+                          </h4>
+                          <p className="text-slate-600 text-xs leading-relaxed mb-4 line-clamp-3">
+                            {item.shortDesc}
+                          </p>
+
+                          {item.tech && (
+                            <div className="flex flex-wrap gap-1.5 mb-4">
+                              {item.tech.map((t, idx) => (
+                                <span
+                                  key={idx}
+                                  className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium"
+                                >
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <button
-                        onClick={() => handleDeleteProject(key)}
-                        className="text-rose-600 hover:text-rose-800 p-1 hover:bg-rose-50 rounded transition-colors"
-                        title="Delete project"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="p-5 pt-0 border-t border-slate-100 flex items-center justify-between text-xs pt-4">
+                        <div className="flex items-center gap-3">
+                          {item.links?.live && (
+                            <a
+                              href={item.links.live}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1"
+                            >
+                              <span>Live</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                          {item.links?.github && (
+                            <a
+                              href={item.links.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-slate-600 hover:text-slate-900 font-medium"
+                            >
+                              GitHub
+                            </a>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteProject(key)}
+                          className="text-rose-600 hover:text-rose-800 p-1 hover:bg-rose-50 rounded transition-colors"
+                          title="Delete project"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

@@ -83,8 +83,11 @@ export default function HomePage() {
     }
   };
 
-  const getGradientBanner = (infra: ProjectItem["infra"]) => {
-    switch (infra) {
+  const getGradientBanner = (project: ProjectItem) => {
+    if (project.gradient && project.gradient.trim() !== "") {
+      return project.gradient;
+    }
+    switch (project.infra) {
       case "Cloudflare":
         return "from-amber-200/70 via-orange-100 to-amber-50";
       case "Render":
@@ -485,7 +488,8 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((project) => {
               const infra = getInfraBadge(project.infra);
-              const bannerBg = getGradientBanner(project.infra);
+              const bannerBg = getGradientBanner(project);
+              const isCustomInline = bannerBg.startsWith("linear-gradient") || bannerBg.startsWith("#") || bannerBg.startsWith("rgb");
 
               return (
                 <article
@@ -494,7 +498,12 @@ export default function HomePage() {
                 >
                   <div>
                     {/* Header banner filled with project logo over ambient gradient */}
-                    <div className={`relative h-48 sm:h-52 bg-gradient-to-br ${bannerBg} p-4 border-b border-slate-100 flex flex-col justify-between overflow-hidden`}>
+                    <div
+                      className={`relative h-48 sm:h-52 p-4 border-b border-slate-100 flex flex-col justify-between overflow-hidden ${
+                        !isCustomInline ? `bg-gradient-to-br ${bannerBg}` : ""
+                      }`}
+                      style={isCustomInline ? { background: bannerBg } : undefined}
+                    >
                       {/* Ambient enlarged logo watermark */}
                       <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
                         <Image

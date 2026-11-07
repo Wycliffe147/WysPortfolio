@@ -8,6 +8,7 @@ export interface ProjectItem {
   tech: string[];
   thumbnail: string;
   logo: string;
+  gradient?: string;
   featured?: boolean;
   links: {
     live?: string;
@@ -96,6 +97,7 @@ export const PROJECTS: ProjectItem[] = [
     tech: ["Node.js", "Express", "MongoDB", "Render", "Tailwind CSS"],
     thumbnail: "/e-library.png",
     logo: "/logos/reportgen.png",
+    gradient: "from-indigo-100 via-purple-50 to-emerald-50",
     featured: true,
     metrics: "Active School Deployment",
     links: {
@@ -117,6 +119,7 @@ export const PROJECTS: ProjectItem[] = [
     tech: ["Node.js", "Baileys WhatsApp API", "pdf-lib", "Express", "Render"],
     thumbnail: "/ReportGenICO.png",
     logo: "/logos/reportgen.png",
+    gradient: "from-emerald-100 via-teal-50 to-cyan-50",
     featured: true,
     metrics: "Thousands of PDFs Dispatched",
     links: {
@@ -138,6 +141,7 @@ export const PROJECTS: ProjectItem[] = [
     tech: ["Cloudflare Pages", "Cloudflare D1 (SQLite)", "Wrangler", "JavaScript"],
     thumbnail: "/logos/rgm.png",
     logo: "/logos/rgm.png",
+    gradient: "from-amber-100 via-amber-50 to-indigo-50",
     featured: true,
     metrics: "Custom Domain with Sub-50ms Edge Response",
     links: {
@@ -160,6 +164,7 @@ export const PROJECTS: ProjectItem[] = [
     tech: ["Cloudflare Pages", "JWT Authentication", "JavaScript", "Responsive Design"],
     thumbnail: "/logos/pamthunzi.png",
     logo: "/logos/pamthunzi.png",
+    gradient: "from-rose-100 via-slate-50 to-amber-50",
     featured: true,
     metrics: "Commercial Retail in Production",
     links: {
@@ -182,6 +187,7 @@ export const PROJECTS: ProjectItem[] = [
     tech: ["Cloudflare Pages", "Cloudflare R2", "Node.js", "Firebase RTDB"],
     thumbnail: "/e-library.png",
     logo: "/logos/wylibrary.png",
+    gradient: "from-sky-100 via-indigo-50 to-blue-50",
     featured: true,
     metrics: "10,000+ Indexed Resources",
     links: {
@@ -204,6 +210,7 @@ export const PROJECTS: ProjectItem[] = [
     tech: ["Cloudflare Pages", "SVG Design", "Tailwind CSS", "JavaScript"],
     thumbnail: "/logos/wamaka.png",
     logo: "/logos/wamaka.png",
+    gradient: "from-emerald-100 via-lime-50 to-amber-50",
     featured: true,
     metrics: "Regional Agriculture Brand",
     links: {
@@ -225,6 +232,7 @@ export const PROJECTS: ProjectItem[] = [
     tech: ["JavaScript", "PDF.js", "Cloudflare Pages", "Web Workers"],
     thumbnail: "/StarPdf.png",
     logo: "/logos/starpdf.png",
+    gradient: "from-amber-100 via-yellow-50 to-sky-50",
     featured: false,
     metrics: "Instant In-Browser Search",
     links: {
@@ -241,7 +249,8 @@ export const PROJECTS: ProjectItem[] = [
     infra: "Local/Linux",
     tech: ["Python", "FastAPI / Socket", "PyTTSx3", "Hyprland IPC", "Linux CLI"],
     thumbnail: "/profile.png",
-    logo: "/profile.png",
+    logo: "/Logo v2.2.png",
+    gradient: "from-purple-100 via-indigo-50 to-slate-100",
     featured: true,
     metrics: "Native Linux Subsystem",
     links: {
@@ -258,6 +267,7 @@ export const PROJECTS: ProjectItem[] = [
     tech: ["Cloudflare Pages", "HTML5", "Modern CSS", "Edge DNS"],
     thumbnail: "/logos/digihelp.svg",
     logo: "/logos/digihelp.svg",
+    gradient: "from-cyan-100 via-sky-50 to-emerald-50",
     featured: false,
     metrics: "Low Bandwidth Accessible",
     links: {
