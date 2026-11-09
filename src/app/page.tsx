@@ -558,7 +558,7 @@ export default function HomePage() {
                       </div>
 
                       {/* Prominent logo filling the canvas */}
-                      <div className="absolute inset-4 sm:inset-6 flex items-center justify-center">
+                      <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
                         <div className="relative w-full h-full">
                           <Image
                             src={project.logo}

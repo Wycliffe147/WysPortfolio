@@ -47,6 +47,7 @@ interface FirebaseProject {
   gradient?: string;
   showOnHome?: boolean;
   featured?: boolean;
+  sortOrder?: number;
 }
 
 const BRAND_GRADIENT_PRESETS = [
@@ -104,7 +105,8 @@ export default function AdminDashboard() {
     links: { live: "", github: "" },
     logo: "/logos/rgm.png",
     gradient: "from-amber-100 via-amber-50 to-indigo-50",
-    showOnHome: true
+    showOnHome: true,
+    sortOrder: undefined
   });
   const [techInput, setTechInput] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
@@ -189,7 +191,8 @@ export default function AdminDashboard() {
       links: { live: "", github: "" },
       logo: "/logos/rgm.png",
       gradient: "from-amber-100 via-amber-50 to-indigo-50",
-      showOnHome: true
+      showOnHome: true,
+      sortOrder: undefined
     });
     setTechInput("");
   };
@@ -206,7 +209,8 @@ export default function AdminDashboard() {
       links: project.links || { live: "", github: "" },
       logo: project.logo || "/logos/rgm.png",
       gradient: project.gradient || "from-amber-100 via-amber-50 to-indigo-50",
-      showOnHome: project.showOnHome !== false && project.featured !== false
+      showOnHome: project.showOnHome !== false && project.featured !== false,
+      sortOrder: project.sortOrder
     });
     setTechInput(project.tech ? project.tech.join(", ") : "");
     if (
@@ -246,6 +250,7 @@ export default function AdminDashboard() {
           links: proj.links,
           showOnHome: proj.showOnHome !== false && proj.featured !== false,
           featured: proj.featured !== false && proj.showOnHome !== false,
+          sortOrder: proj.sortOrder || 99,
           metrics: proj.metrics || null,
           story: proj.story || null,
           createdAt: Date.now(),
@@ -275,6 +280,10 @@ export default function AdminDashboard() {
         ...newProject,
         showOnHome: newProject.showOnHome !== false,
         featured: newProject.showOnHome !== false,
+        sortOrder:
+          newProject.sortOrder !== undefined && newProject.sortOrder !== null && String(newProject.sortOrder) !== ""
+            ? Number(newProject.sortOrder)
+            : null,
         tech: techArray.length ? techArray : ["Full-Stack"],
         updatedAt: Date.now()
       };
@@ -678,29 +687,55 @@ export default function AdminDashboard() {
                     ></textarea>
                   </div>
 
-                  {/* Homepage Display Toggle */}
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
-                    <div>
-                      <span className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                        Display on Homepage
-                      </span>
-                      <span className="text-xs text-slate-500 block mt-0.5">
-                        When enabled, this project appears on the main homepage. When disabled, it is only listed on the /projects archive.
-                      </span>
+                  {/* Homepage Display Toggle & Display Order */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2 p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
+                      <div>
+                        <span className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          Display on Homepage
+                        </span>
+                        <span className="text-xs text-slate-500 block mt-0.5">
+                          When enabled, this project appears on the main homepage. When disabled, it is only listed on the /projects archive.
+                        </span>
+                      </div>
+
+                      <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={newProject.showOnHome !== false}
+                          onChange={(e) =>
+                            setNewProject({ ...newProject, showOnHome: e.target.checked })
+                          }
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                      </label>
                     </div>
 
-                    <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                      <div>
+                        <label className="block text-xs uppercase tracking-wider text-slate-700 mb-1 font-bold">
+                          Display Order
+                        </label>
+                        <span className="text-[11px] text-slate-500 block mb-2">
+                          Lower number appears first (e.g. 1, 2, 3)
+                        </span>
+                      </div>
                       <input
-                        type="checkbox"
-                        checked={newProject.showOnHome !== false}
+                        type="number"
+                        min={1}
+                        value={newProject.sortOrder ?? ""}
                         onChange={(e) =>
-                          setNewProject({ ...newProject, showOnHome: e.target.checked })
+                          setNewProject({
+                            ...newProject,
+                            sortOrder: e.target.value ? Number(e.target.value) : undefined
+                          })
                         }
-                        className="sr-only peer"
+                        placeholder="e.g. 1"
+                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
                       />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                    </label>
+                    </div>
                   </div>
 
                   {/* BRAND GRADIENT CONTROLS */}
@@ -919,7 +954,13 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(projects).map(([key, item]) => {
+                {Object.entries(projects)
+                  .sort(([, a], [, b]) => {
+                    const orderA = typeof a.sortOrder === "number" ? a.sortOrder : 999;
+                    const orderB = typeof b.sortOrder === "number" ? b.sortOrder : 999;
+                    return orderA - orderB;
+                  })
+                  .map(([key, item]) => {
                   const cardGradient = item.gradient || "from-amber-100 via-amber-50 to-indigo-50";
                   const isCustomCardInline =
                     cardGradient.startsWith("linear-gradient") ||
@@ -939,7 +980,12 @@ export default function AdminDashboard() {
                           }`}
                           style={isCustomCardInline ? { background: cardGradient } : undefined}
                         >
-                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap max-w-[80%]">
+                            {typeof item.sortOrder === "number" && (
+                              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-slate-900 text-white shadow-xs">
+                                #{item.sortOrder}
+                              </span>
+                            )}
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-slate-800 border border-white/80">
                               {item.infra || "Cloudflare"}
                             </span>

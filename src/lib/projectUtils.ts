@@ -35,6 +35,12 @@ export function normalizeFirebaseProject(key: string, data: any): ProjectItem {
   const shortDesc = data?.shortDesc || data?.description || "";
   const tagline = data?.tagline || shortDesc || "Production system";
   const description = data?.description || shortDesc || "";
+  const sortOrder =
+    typeof data?.sortOrder === "number"
+      ? data.sortOrder
+      : !isNaN(Number(data?.sortOrder)) && data?.sortOrder !== null && data?.sortOrder !== undefined && data?.sortOrder !== ""
+      ? Number(data.sortOrder)
+      : undefined;
 
   return {
     id: data?.id || key,
@@ -49,6 +55,7 @@ export function normalizeFirebaseProject(key: string, data: any): ProjectItem {
     gradient: data?.gradient || "",
     featured: showOnHome,
     showOnHome,
+    sortOrder,
     links: { live, github },
     metrics: data?.metrics || (data?.size ? `${data.size} project` : undefined),
     story: data?.story
@@ -88,5 +95,11 @@ export function mergeProjects(
     return !idMatch && !titleMatch;
   });
 
-  return [...firebaseItems, ...nonOverriddenDefaults];
+  const allMerged = [...firebaseItems, ...nonOverriddenDefaults];
+
+  return allMerged.sort((a, b) => {
+    const orderA = typeof a.sortOrder === "number" ? a.sortOrder : 999;
+    const orderB = typeof b.sortOrder === "number" ? b.sortOrder : 999;
+    return orderA - orderB;
+  });
 }

@@ -272,7 +272,7 @@ export default function AllProjectsPage() {
                       </div>
 
                       {/* Prominent logo */}
-                      <div className="absolute inset-4 sm:inset-6 flex items-center justify-center">
+                      <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
                         <div className="relative w-full h-full">
                           <Image
                             src={project.logo}

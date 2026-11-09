@@ -11,6 +11,7 @@ export interface ProjectItem {
   gradient?: string;
   featured?: boolean;
   showOnHome?: boolean;
+  sortOrder?: number;
   links: {
     live?: string;
     github?: string;
@@ -90,6 +91,7 @@ export const CLIENT_PARTNERS: ClientPartner[] = [
 export const PROJECTS: ProjectItem[] = [
   {
     id: "school-os-mw",
+    sortOrder: 3,
     title: "School OS Malawi",
     tagline: "Comprehensive School Management, Payments & Parent Portal",
     description: "An educational management system built for Malawian institutions, streamlining student records, fee collection, and digital discovery.",
@@ -112,6 +114,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "report-generator-web",
+    sortOrder: 2,
     title: "Automated Report Card & WhatsApp Dispatcher",
     tagline: "Student PDF Report Engine with WhatsApp Baileys Integration",
     description: "High-speed batch report card generator that merges grades, renders secure PDF report cards, and automatically dispatches them directly to parents via WhatsApp.",
@@ -134,6 +137,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "rgm-site",
+    sortOrder: 1,
     title: "RGM Malawi Portal",
     tagline: "Official Ministry Portal & Database on Cloudflare D1",
     description: "Edge-hosted community platform with serverless SQLite database bindings, event calendars, and publication archive.",
@@ -157,6 +161,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "pamthunzi-electronics",
+    sortOrder: 4,
     title: "Pamthunzi Electronics Storefront",
     tagline: "Commercial Retail Catalog with JWT Admin & Inventory",
     description: "Fast e-commerce and retail stock catalog designed for speedy asset loading on mobile devices, with token-secured administrative controls.",
@@ -180,6 +185,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "wylibrary",
+    sortOrder: 5,
     title: "WyLibrary Knowledge Engine",
     tagline: "Large-Scale Educational Digital Sanctuary & Asset Delivery",
     description: "Curated digital repository managing 10,000+ educational resources and books with low-bandwidth offline caching and instant previews.",
@@ -203,6 +209,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "wamaka-rice",
+    sortOrder: 7,
     title: "Wamaka Rice Digital Brand",
     tagline: "Modern Agribusiness Identity & Digital Presence",
     description: "Agricultural commerce portal and visual brand identity highlighting domestic Malawian rice production and distribution channels.",
@@ -225,6 +232,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "star-pdf-search",
+    sortOrder: 8,
     title: "Star PDF Search Engine",
     tagline: "High-Speed Client-Side PDF Content Indexer",
     description: "Instantaneous textual retrieval engine parsing through multi-thousand-page documents with PDF.js client-side memory indexing.",
@@ -243,6 +251,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "jarvis-omarchy",
+    sortOrder: 6,
     title: "JARVIS Desktop AI & System Agent",
     tagline: "Native Linux Voice & Automation Assistant",
     description: "Modular desktop AI companion tailored for Linux (Omarchy / Hyprland) with natural voice synthesis, command execution, and workspace shortcuts.",
@@ -260,6 +269,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "digihelp-site",
+    sortOrder: 9,
     title: "DigiHelp Community Hub",
     tagline: "Public Digital Services & Knowledge Base",
     description: "Digital literacy and technical assistance platform deployed on Cloudflare Pages providing localized guides and tools.",
