@@ -4,7 +4,7 @@ export interface ProjectItem {
   tagline: string;
   description: string;
   category: "Client & Business" | "Systems & Automation" | "Edge & Web" | "AI & Desktop";
-  infra: "Cloudflare" | "Render" | "Vercel" | "Local/Linux" | "Multi-Cloud";
+  infra: "Cloudflare" | "Render" | "Vercel" | "Local/Linux" | "Local/Windows" | "Multi-Cloud";
   tech: string[];
   thumbnail: string;
   logo: string;
@@ -338,6 +338,31 @@ export const PROJECTS: ProjectItem[] = [
     links: {
       live: "https://digihelp-site.pages.dev",
       github: "https://github.com/Wycliffe147/digihelp-site"
+    }
+  },
+  {
+    id: "report-generator-excel",
+    sortOrder: 12,
+    title: "Report Generator (Excel Origin)",
+    tagline: "The VBA + WhatsApp Root of a School Automation Lineage",
+    description: "The original macro-enabled Excel application that started it all. Used VBA macros for batch student report card generation and WPPConnect to dispatch results directly to parents over WhatsApp from a Windows PC. This is where the idea was born.",
+    category: "Systems & Automation",
+    infra: "Local/Windows",
+    tech: ["MS Excel VBA", "WPPConnect", "Node.js", "Windows Batch"],
+    thumbnail: "/logos/reportgen.png",
+    logo: "/logos/reportgen.png",
+    gradient: "from-green-100 via-emerald-50 to-teal-50",
+    featured: false,
+    showOnHome: false,
+    metrics: "Origin of School OS Malawi",
+    links: {
+      live: "https://github.com/Wycliffe147/WysPortfolio/releases/tag/ExcelReportV2.0.0",
+      github: "https://github.com/Wycliffe147/WysPortfolio/releases/download/ExcelReportV2.0.0/Excel.Report.Generator.zip"
+    },
+    story: {
+      challenge: "Schools needed automated report card generation and direct parent communication before any web infrastructure existed.",
+      solution: "Built a macro-driven Excel workbook with VBA batch processing and integrated WPPConnect to dispatch report cards to parents over WhatsApp from a Windows PC.",
+      impact: "This project directly evolved into report-generator-web and later into the full School OS Malawi platform - a complete lineage born from one spreadsheet."
     }
   }
 ];
