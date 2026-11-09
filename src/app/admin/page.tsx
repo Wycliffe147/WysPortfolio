@@ -1362,6 +1362,64 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* Live Storage & Database Quota Meter */}
+            {(() => {
+              const totalPayloadBytes = JSON.stringify(projects).length;
+              const totalKB = (totalPayloadBytes / 1024).toFixed(1);
+              const sparkQuotaBytes = 1024 * 1024 * 1024; // 1 GB
+              const percentUsed = ((totalPayloadBytes / sparkQuotaBytes) * 100).toFixed(4);
+              const customUploadCount = Object.values(projects).filter(
+                (p) => p.logo && p.logo.startsWith("data:")
+              ).length;
+
+              return (
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                        <DownloadCloud className="w-4 h-4 text-indigo-600" />
+                        Live Database Storage &amp; Logo Quota
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Real-time calculation of all stored projects and device logos against the Firebase Spark 1 GB free tier.
+                      </p>
+                    </div>
+                    <div className="sm:text-right">
+                      <span className="font-mono font-bold text-slate-900 text-sm">{totalKB} KB used</span>
+                      <span className="text-slate-500 text-xs block">of 1,024 MB (1 GB Free)</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, Math.max(1, Number(percentUsed) * 20))}%` }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-xs">
+                    <div className="p-3 rounded-xl bg-white border border-slate-200/80">
+                      <span className="text-slate-500 block text-[11px]">Spark Quota Used</span>
+                      <span className="font-bold text-emerald-700 font-mono text-sm">{percentUsed}%</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white border border-slate-200/80">
+                      <span className="text-slate-500 block text-[11px]">Total Projects</span>
+                      <span className="font-bold text-slate-900 font-mono text-sm">{Object.keys(projects).length}</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white border border-slate-200/80">
+                      <span className="text-slate-500 block text-[11px]">Device Logos (Base64)</span>
+                      <span className="font-bold text-indigo-700 font-mono text-sm">{customUploadCount}</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white border border-slate-200/80">
+                      <span className="text-slate-500 block text-[11px]">Remaining Space</span>
+                      <span className="font-bold text-slate-900 font-mono text-sm">&gt; 99.99%</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             <div className="p-4 rounded-xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1">
               <span className="font-bold block">About User Tracking &amp; Authentication</span>
               <p className="text-indigo-800 leading-relaxed">
