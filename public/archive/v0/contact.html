@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Me - Wycliffe's Portfolio</title>
+    <link rel="stylesheet" href="contact.css">
+</head>
+<body>
+    <!-- Back to Home Button -->
+    <a href="index.html" class="back-to-home">← Back to Portfolio</a>
+
+    <!-- Contact Hero Section -->
+    <section class="contact-hero">
+        <div class="container">
+            <h1>Get In Touch</h1>
+            <p>I'd love to hear from you! Please sign in with Google to ensure secure communication.</p>
+        </div>
+    </section>
+
+    <!-- Main Contact Section -->
+    <section class="contact-main">
+        <div class="container">
+            <div class="contact-grid">
+                <!-- Contact Information -->
+                <div class="contact-info-card">
+                    <h2>Contact Information</h2>
+                    
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <div class="contact-details">
+                            <h3>Email</h3>
+                            <p>wycliffemwanganda@gmail.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div class="contact-details">
+                            <h3>Location</h3>
+                            <p>Mzuzu, Malawi</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div class="contact-details">
+                            <h3>Response Time</h3>
+                            <p>I will respond when I see the email</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <div class="contact-details">
+                            <h3>Security</h3>
+                            <p>Google authentication required for secure messaging</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Authentication/Contact Form -->
+                <div id="authSection" class="auth-section">
+                    <h2>Secure Authentication Required</h2>
+                    <div class="security-notice">
+                        <span class="notice-icon">🔒</span>
+                        <strong>Security Notice:</strong> To prevent spam and ensure secure communication, please authenticate with your Google account before sending a message.
+                    </div>
+                    <p class="auth-description">
+                        Your information is kept private and secure. I only use your Google account to verify your identity and prevent automated spam messages.
+                    </p>
+                    <div id="errorMessage" class="error-message hidden"></div>
+                    
+                    <!-- Google Sign-In Button Container -->
+                    <div class="google-signin-container">
+                        <div id="signinLoadingState" class="signin-loading">Loading Google Sign-In...</div>
+                        <div id="g_id_signin" class="hidden"></div>
+                    </div>
+                </div>
+
+                <div id="contactFormSection" class="contact-form-card hidden">
+                    <div class="user-info">
+                        <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+                        <div class="user-details">
+                            <h3 id="userName"></h3>
+                            <p id="userEmail"></p>
+                        </div>
+                        <button id="logoutBtn" class="logout-btn">Sign Out</button>
+                    </div>
+                    
+                    <h2>Send Me a Message</h2>
+                    <form action="https://formspree.io/f/manjqdjz" method="POST" id="contactForm">
+                        <input type="hidden" id="senderName" name="sender_name">
+                        <input type="hidden" id="senderEmail" name="sender_email">
+                        <input type="hidden" id="authToken" name="auth_token">
+                        
+                        <div class="form-group">
+                            <label for="subject">Subject *</label>
+                            <input type="text" id="subject" name="subject" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message *</label>
+                            <textarea id="message" name="message" class="form-control" placeholder="Tell me about your project or inquiry..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn" id="submitBtn">Send Secure Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 Wy'sPortfolio. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <!-- Include the external JavaScript file -->
+    <script src="contact.js"></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Wy's Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            color: #3498db;
+        }
+        .dashboard {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .user-table th, .user-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .user-table th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+        .user-table tr:hover {
+            background: #f8f9fa;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sort-btn {
+            cursor: pointer;
+            color: white;
+            background: none;
+            border: none;
+            margin-left: 0.5rem;
+        }
+        .sort-btn:hover {
+            color: #ecf0f1;
+        }
+        .no-users {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        .back-to-home:hover {
+            color: #2980b9;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .user-table th, .user-table td {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            .user-avatar {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-to-home">&larr; Back to Portfolio</a>
+        <header>
+            <h1>Active Users Dashboard</h1>
+            <p>Track users currently signed in with Google accounts</p>
+        </header>
+        <div class="dashboard">
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>Name <button class="sort-btn" data-sort="name"><i class="fas fa-sort"></i></button></th>
+                        <th>Email <button class="sort-btn" data-sort="email"><i class="fas fa-sort"></i></button></th>
+                        <th>Profile Picture</th>
+                        <th>Sign-In Time <button class="sort-btn" data-sort="signInTime"><i class="fas fa-sort"></i></button></th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+            <div id="noUsersMessage" class="no-users" style="display: none;">No users are currently signed in.</div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        const userTableBody = document.getElementById('userTableBody');
+        const noUsersMessage = document.getElementById('noUsersMessage');
+        let users = [];
+        let sortField = 'signInTime';
+        let sortDirection = -1;
+
+        // Fetch users from Firebase
+        const usersRef = firebase.database().ref('activeUsers');
+        usersRef.on('value', (snapshot) => {
+            users = [];
+            snapshot.forEach((childSnapshot) => {
+                const user = childSnapshot.val();
+                if (isSessionValid(user)) {
+                    users.push({
+                        id: childSnapshot.key,
+                        name: user.name,
+                        email: user.email,
+                        picture: user.picture,
+                        signInTime: user.signInTime
+                    });
+                } else {
+                    // Remove expired sessions
+                    childSnapshot.ref.remove();
+                }
+            });
+            renderUsers();
+        });
+
+        // Check session validity (7 days)
+        function isSessionValid(user) {
+            if (!user || !user.signInTime) return false;
+            const sessionAge = Date.now() - user.signInTime;
+            const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+            return sessionAge < maxAge;
+        }
+
+        // Render users in table
+        function renderUsers() {
+            userTableBody.innerHTML = '';
+            if (users.length === 0) {
+                noUsersMessage.style.display = 'block';
+                return;
+            }
+            noUsersMessage.style.display = 'none';
+            users.sort((a, b) => {
+                if (sortField === 'signInTime') {
+                    return (a[sortField] - b[sortField]) * sortDirection;
+                }
+                return a[sortField].localeCompare(b[sortField]) * sortDirection;
+            });
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name || 'N/A'}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td><img src="${user.picture || ''}" alt="Profile" class="user-avatar" onerror="this.src='https://via.placeholder.com/40'"></td>
+                    <td>${new Date(user.signInTime).toLocaleString()}</td>
+                `;
+                userTableBody.appendChild(row);
+            });
+        }
+
+        // Handle sorting
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const newSortField = btn.dataset.sort;
+                if (newSortField === sortField) {
+                    sortDirection *= -1;
+                } else {
+                    sortField = newSortField;
+                    sortDirection = 1;
+                }
+                btn.querySelector('i').className = `fas fa-sort-${sortDirection === 1 ? 'up' : 'down'}`;
+                document.querySelectorAll('.sort-btn').forEach(b => {
+                    if (b !== btn) b.querySelector('i').className = 'fas fa-sort';
+                });
+                renderUsers();
+            });
+        });
+    </script>
+</body>
+</html>
