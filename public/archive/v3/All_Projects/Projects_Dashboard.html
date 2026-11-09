@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects Dashboard - Wy's Portfolio</title>
+    <link rel="stylesheet" href="dashboard-style.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="../firebase-config.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Dashboard</h2>
+                <p class="user-badge">Admin</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Projects</span>
+                </a>
+                <a href="../index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Back to Site</span>
+                </a>
+                <a href="#" class="nav-item" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="connectionStatus" style="padding: 10px; margin-bottom: 1rem; border-radius: 10px; display: none; font-weight: 600; text-align: center;"></div>
+            
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <div class="mobile-header-top">
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1>Projects Management</h1>
+                    </div>
+                    <p class="subtitle">Manage your portfolio projects</p>
+                </div>
+                <button class="btn-primary" id="addProjectBtn">
+                    <i class="fas fa-plus"></i>
+                    Add New Project
+                </button>
+            </header>
+
+            <!-- Sidebar Overlay -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="stat-info">
+                        <p class="stat-label">Total Projects</p>
+                        <h3 class="stat-value" id="totalProjects">0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="stat-info">
+                        <p class="stat-label">Published</p>
+                        <h3 class="stat-value" id="publishedProjects">0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <p class="stat-label">Last Updated</p>
+                        <h3 class="stat-value" id="lastUpdated">Today</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>All Projects</h2>
+                    <div class="search-filter">
+                        <input type="text" id="searchProjects" placeholder="Search projects..." class="search-input-dash">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="projects-table">
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Description</th>
+                                <th>Tags</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody">
+                            <!-- Projects will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Project</h2>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="projectForm">
+                <input type="hidden" id="projectIndex">
+                
+                <div class="form-tabs">
+                    <button type="button" class="tab-btn active" data-tab="basic">Basic Info</button>
+                    <button type="button" class="tab-btn" data-tab="story">Project Story</button>
+                    <button type="button" class="tab-btn" data-tab="links">Links & Tech</button>
+                </div>
+
+                <!-- Basic Info Tab -->
+                <div class="tab-content active" id="basic">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectName">Project Name *</label>
+                            <input type="text" id="projectName" required placeholder="Enter project name">
+                        </div>
+                        <div class="form-group">
+                            <label for="projectId">Project ID (Slug) *</label>
+                            <input type="text" id="projectId" required placeholder="e-library-v2">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectCategory">Category *</label>
+                            <select id="projectCategory" required>
+                                <option value="Web App">Web App</option>
+                                <option value="Mobile">Mobile</option>
+                                <option value="AI Tool">AI Tool</option>
+                                <option value="Tool">Tool</option>
+                                <option value="Design">Design</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectSize">Card Size *</label>
+                            <select id="projectSize" required>
+                                <option value="small">Small</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="large">Large</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectDescription">Short Description (Card) *</label>
+                        <textarea id="projectDescription" required placeholder="Brief description for the card" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectImage">Thumbnail Image</label>
+                        <div class="input-with-action" style="margin-bottom: 0.5rem;">
+                            <input type="text" id="projectImage" required placeholder="../e-library.png">
+                            <label for="imageUpload" class="btn-secondary" style="margin-bottom: 0; cursor: pointer; white-space: nowrap;">
+                                <i class="fas fa-upload"></i> Upload
+                            </label>
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                        </div>
+                        <div id="uploadProgressContainer" style="display: none; margin-top: 0.5rem;">
+                            <div class="progress-bar-bg" style="height: 6px; background: var(--light-alt); border-radius: 3px; overflow: hidden;">
+                                <div id="uploadProgressBar" style="height: 100%; width: 0%; background: var(--primary); transition: width 0.3s ease;"></div>
+                            </div>
+                            <small id="uploadStatus" style="display: block; margin-top: 4px; color: var(--text-muted); font-size: 0.75rem;">Uploading: 0%</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story Tab -->
+                <div class="tab-content" id="story">
+                    <div class="form-group">
+                        <label for="storyChallenge">The Challenge *</label>
+                        <textarea id="storyChallenge" required placeholder="What problem were you solving?" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="storySolution">The Solution *</label>
+                        <textarea id="storySolution" required placeholder="How did you build it?" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="storyResult">The Result *</label>
+                        <textarea id="storyResult" required placeholder="What was the outcome?" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Links & Tech Tab -->
+                <div class="tab-content" id="links">
+                    <div class="form-group">
+                        <label for="projectTags">Technologies (comma-separated) *</label>
+                        <input type="text" id="projectTags" required placeholder="Node.js, Firebase, Express">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectSearchKeywords">Search Keywords</label>
+                        <input type="text" id="projectSearchKeywords" placeholder="automation, school, library">
+                    </div>
+
+                    <div id="linksContainer">
+                        <!-- Dynamic link rows will be added here -->
+                    </div>
+                    <button type="button" class="btn-secondary" id="addLinkBtn" style="margin-top: 0.5rem; width: 100%; justify-content: center;">
+                        <i class="fas fa-plus"></i> Add Another Link
+                    </button>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Project
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content delete-modal">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="close-btn" id="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this project? This action cannot be undone.</p>
+                <p class="project-name-confirm" id="deleteProjectName"></p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash"></i>
+                    Delete Project
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js?v=2.1"></script>
+</body>
+</html>
