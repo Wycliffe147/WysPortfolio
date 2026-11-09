@@ -57,7 +57,9 @@ const BRAND_GRADIENT_PRESETS = [
   { name: "Knowledge Sky (WyLibrary)", value: "from-sky-100 via-indigo-50 to-blue-50", preview: "#e0f2fe" },
   { name: "Academic Violet (School OS)", value: "from-indigo-100 via-purple-50 to-emerald-50", preview: "#e0e7ff" },
   { name: "Star Gold (Star PDF)", value: "from-amber-100 via-yellow-50 to-sky-50", preview: "#fef08a" },
-  { name: "Cyber Purple (JARVIS)", value: "from-purple-100 via-indigo-50 to-slate-100", preview: "#f3e8ff" },
+  { name: "Cyber Purple (JARVIS Linux)", value: "from-purple-100 via-indigo-50 to-slate-100", preview: "#f3e8ff" },
+  { name: "Emerald Cyber (JARVIS Android)", value: "from-emerald-100 via-teal-50 to-indigo-50", preview: "#d1fae5" },
+  { name: "Sky Cyber (JARVIS Windows)", value: "from-blue-100 via-sky-50 to-indigo-50", preview: "#dbeafe" },
   { name: "Digital Cyan (DigiHelp)", value: "from-cyan-100 via-sky-50 to-emerald-50", preview: "#cffafe" },
   { name: "Neutral Studio Frost", value: "from-slate-100 via-slate-50 to-zinc-100", preview: "#f1f5f9" }
 ];
@@ -888,29 +890,43 @@ export default function AdminDashboard() {
                       </div>
 
                       <div
-                        className={`h-36 rounded-2xl border border-slate-200 relative overflow-hidden flex items-center justify-center ${
+                        className={`h-40 rounded-2xl border border-slate-200 relative overflow-hidden transition-all duration-300 ${
                           !isCustomInlinePreview ? `bg-gradient-to-br ${currentGradient}` : ""
                         }`}
                         style={isCustomInlinePreview ? { background: currentGradient } : undefined}
                       >
+                        {/* Ambient blur watermark */}
+                        {newProject.logo && (
+                          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                            <Image
+                              src={newProject.logo}
+                              alt=""
+                              fill
+                              className="object-cover blur-xl opacity-20 scale-125"
+                            />
+                          </div>
+                        )}
+
+                        {/* Centered logo filling edge-to-edge */}
+                        {newProject.logo && (
+                          <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                            <div className="relative w-full h-full">
+                              <Image
+                                src={newProject.logo}
+                                alt="Logo Preview"
+                                fill
+                                className="object-contain drop-shadow-sm"
+                              />
+                            </div>
+                          </div>
+                        )}
+
                         {/* Overlay chips */}
                         <div className="absolute top-3 left-3 z-10">
                           <span className="px-2.5 py-0.5 rounded-full bg-white/90 text-slate-800 text-[10px] font-bold border border-white/80 shadow-xs">
                             {newProject.infra || "Cloudflare"}
                           </span>
                         </div>
-
-                        {/* Centered logo preview */}
-                        {newProject.logo && (
-                          <div className="relative w-24 h-24">
-                            <Image
-                              src={newProject.logo}
-                              alt="Logo Preview"
-                              fill
-                              className="object-contain drop-shadow-sm"
-                            />
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -975,12 +991,38 @@ export default function AdminDashboard() {
                       <div>
                         {/* Visual Banner */}
                         <div
-                          className={`h-28 relative flex items-center justify-center p-3 border-b border-slate-100 ${
+                          className={`h-36 relative overflow-hidden border-b border-slate-100 ${
                             !isCustomCardInline ? `bg-gradient-to-br ${cardGradient}` : ""
                           }`}
                           style={isCustomCardInline ? { background: cardGradient } : undefined}
                         >
-                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap max-w-[80%]">
+                          {/* Ambient blur watermark */}
+                          {item.logo && (
+                            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                              <Image
+                                src={item.logo}
+                                alt=""
+                                fill
+                                className="object-cover blur-xl opacity-20 scale-125"
+                              />
+                            </div>
+                          )}
+
+                          {/* Logo touching nearest edges */}
+                          {item.logo && (
+                            <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                              <div className="relative w-full h-full">
+                                <Image
+                                  src={item.logo}
+                                  alt={item.title}
+                                  fill
+                                  className="object-contain drop-shadow-xs"
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 flex-wrap max-w-[85%]">
                             {typeof item.sortOrder === "number" && (
                               <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-slate-900 text-white shadow-xs">
                                 #{item.sortOrder}
@@ -1001,17 +1043,6 @@ export default function AdminDashboard() {
                                 : "Archive Only"}
                             </span>
                           </div>
-
-                          {item.logo && (
-                            <div className="relative w-16 h-16">
-                              <Image
-                                src={item.logo}
-                                alt={item.title}
-                                fill
-                                className="object-contain drop-shadow-xs"
-                              />
-                            </div>
-                          )}
                         </div>
 
                         <div className="p-5">

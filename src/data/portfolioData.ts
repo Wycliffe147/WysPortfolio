@@ -209,7 +209,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "wamaka-rice",
-    sortOrder: 7,
+    sortOrder: 9,
     title: "Wamaka Rice Digital Brand",
     tagline: "Modern Agribusiness Identity & Digital Presence",
     description: "Agricultural commerce portal and visual brand identity highlighting domestic Malawian rice production and distribution channels.",
@@ -232,7 +232,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     id: "star-pdf-search",
-    sortOrder: 8,
+    sortOrder: 10,
     title: "Star PDF Search Engine",
     tagline: "High-Speed Client-Side PDF Content Indexer",
     description: "Instantaneous textual retrieval engine parsing through multi-thousand-page documents with PDF.js client-side memory indexing.",
@@ -252,24 +252,78 @@ export const PROJECTS: ProjectItem[] = [
   {
     id: "jarvis-omarchy",
     sortOrder: 6,
-    title: "JARVIS Desktop AI & System Agent",
-    tagline: "Native Linux Voice & Automation Assistant",
-    description: "Modular desktop AI companion tailored for Linux (Omarchy / Hyprland) with natural voice synthesis, command execution, and workspace shortcuts.",
+    title: "JARVIS for Omarchy Linux",
+    tagline: "Native Arch Linux & Hyprland IPC Companion with Wayland Automation",
+    description: "Modular desktop AI companion tailored directly for Arch Linux and the Hyprland Wayland compositor. Features deep IPC control, PipeWire audio routing via wpctl, Wayland screen capture via grim, playerctl MPRIS media transport, and window management automation.",
     category: "AI & Desktop",
     infra: "Local/Linux",
-    tech: ["Python", "FastAPI / Socket", "PyTTSx3", "Hyprland IPC", "Linux CLI"],
+    tech: ["Python", "Arch Linux", "Hyprland IPC", "PipeWire (wpctl)", "Wayland (grim/wtype)"],
     thumbnail: "/profile.png",
     logo: "/Logo v2.2.png",
     gradient: "from-purple-100 via-indigo-50 to-slate-100",
     featured: true,
-    metrics: "Native Linux Subsystem",
+    showOnHome: true,
+    metrics: "Native Wayland Subsystem",
     links: {
       github: "https://github.com/Wycliffe147/jarvis-assistant"
+    },
+    story: {
+      challenge: "Desktop assistants lack deep hooks into modern Wayland compositors and Linux tiling window managers, leaving power users disconnected.",
+      solution: "Engineered native tool bridges mapping voice triggers and intents directly to hyprctl IPC, wpctl audio nodes, grim screenshots, and synthetic keystrokes.",
+      impact: "Delivers zero-latency, hands-free workspace switching, screen OCR, volume adjustment, and local command execution entirely offline."
+    }
+  },
+  {
+    id: "jarvis-android-termux",
+    sortOrder: 7,
+    title: "JARVIS on Android (Termux)",
+    tagline: "Autonomous On-Device Smartphone AI with Hardware & ADB Control",
+    description: "Voice-controlled AI assistant that runs entirely on an Android phone via Termux without requiring a PC, cloud server, or companion app. Controls device hardware, SMS, calls, contacts, camera, and other Android devices over wireless ADB.",
+    category: "AI & Desktop",
+    infra: "Local/Linux",
+    tech: ["Python", "Termux API", "Whisper STT", "Piper TTS", "Wireless ADB"],
+    thumbnail: "/profile.png",
+    logo: "/Logo v2.2.png",
+    gradient: "from-emerald-100 via-teal-50 to-indigo-50",
+    featured: true,
+    showOnHome: true,
+    metrics: "100% On-Device Android Execution",
+    links: {
+      github: "https://github.com/Wycliffe147/jarvis-assistant"
+    },
+    story: {
+      challenge: "Smartphone assistants are vendor-locked and cannot automate third-party apps, dispatch terminal commands, or function offline.",
+      solution: "Built a local intent router utilizing on-device Whisper speech recognition, Piper neural voice, Termux API bindings, and loopback ADB automation.",
+      impact: "Empowered an ordinary Android phone to perform autonomous device actions, capture and OCR screens, and dispatch notifications locally."
+    }
+  },
+  {
+    id: "jarvis-windows",
+    sortOrder: 8,
+    title: "JARVIS Companion for Windows",
+    tagline: "Win32 & Core Audio Automation Assistant with Phone Tethering",
+    description: "Native Windows port utilizing Win32 APIs, pycaw Core Audio control, pywinauto UI automation, and PIL screen analysis. Integrates a wireless ADB bridge to control tethered mobile devices and mirror screens via scrcpy.",
+    category: "AI & Desktop",
+    infra: "Local/Linux",
+    tech: ["Python", "pywinauto", "pycaw (Core Audio)", "Tesseract OCR", "SAPI5 / Piper"],
+    thumbnail: "/profile.png",
+    logo: "/Logo v2.2.png",
+    gradient: "from-blue-100 via-sky-50 to-indigo-50",
+    featured: true,
+    showOnHome: true,
+    metrics: "Win32 & Wireless ADB Bridge",
+    links: {
+      github: "https://github.com/Wycliffe147/jarvis-windows"
+    },
+    story: {
+      challenge: "Porting a Unix-native shell assistant to Windows required re-architecting hardware interactions away from bash pipelines to native COM interfaces.",
+      solution: "Rewrote hardware tools with Windows-native equivalents using pycaw for master audio endpoints, pywinauto for GUI manipulation, and native SAPI5 voices.",
+      impact: "Provided unified desktop voice automation, local screen OCR, and seamless cross-platform phone control from a Windows workstation."
     }
   },
   {
     id: "digihelp-site",
-    sortOrder: 9,
+    sortOrder: 11,
     title: "DigiHelp Community Hub",
     tagline: "Public Digital Services & Knowledge Base",
     description: "Digital literacy and technical assistance platform deployed on Cloudflare Pages providing localized guides and tools.",
