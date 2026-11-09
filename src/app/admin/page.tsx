@@ -21,7 +21,9 @@ import {
   Sparkles,
   Palette,
   Sliders,
-  Eye
+  Eye,
+  EyeOff,
+  Pencil
 } from "lucide-react";
 
 interface FirebaseProject {
@@ -70,6 +72,7 @@ export default function AdminDashboard() {
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Active view tab
   const [activeTab, setActiveTab] = useState<"projects" | "users">("projects");
@@ -77,6 +80,7 @@ export default function AdminDashboard() {
   // Projects State
   const [projects, setProjects] = useState<Record<string, FirebaseProject>>({});
   const [isAddingProject, setIsAddingProject] = useState(false);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
 
   // Gradient control mode
   const [gradientMode, setGradientMode] = useState<"preset" | "manual">("preset");
@@ -165,7 +169,48 @@ export default function AdminDashboard() {
     setIsAuthenticated(false);
   };
 
-  const handleCreateProject = async (e: React.FormEvent) => {
+  const handleCancelForm = () => {
+    setIsAddingProject(false);
+    setEditingKey(null);
+    setNewProject({
+      title: "",
+      category: "Systems & Automation",
+      shortDesc: "",
+      tech: [],
+      infra: "Cloudflare",
+      links: { live: "", github: "" },
+      logo: "/logos/rgm.png",
+      gradient: "from-amber-100 via-amber-50 to-indigo-50"
+    });
+    setTechInput("");
+  };
+
+  const handleStartEdit = (key: string, project: FirebaseProject) => {
+    setEditingKey(key);
+    setIsAddingProject(true);
+    setNewProject({
+      title: project.title || "",
+      category: project.category || "Systems & Automation",
+      shortDesc: project.shortDesc || "",
+      tech: project.tech || [],
+      infra: project.infra || "Cloudflare",
+      links: project.links || { live: "", github: "" },
+      logo: project.logo || "/logos/rgm.png",
+      gradient: project.gradient || "from-amber-100 via-amber-50 to-indigo-50"
+    });
+    setTechInput(project.tech ? project.tech.join(", ") : "");
+    if (
+      project.gradient &&
+      (project.gradient.startsWith("linear-gradient") || project.gradient.startsWith("#"))
+    ) {
+      setGradientMode("manual");
+    } else {
+      setGradientMode("preset");
+    }
+    window.scrollTo({ top: 120, behavior: "smooth" });
+  };
+
+  const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProject.title || !newProject.shortDesc) return;
 
@@ -175,31 +220,32 @@ export default function AdminDashboard() {
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const projectsRef = ref(db, "projects");
-      const newProjRef = push(projectsRef);
-
-      await set(newProjRef, {
+      const payload = {
         ...newProject,
         tech: techArray.length ? techArray : ["Full-Stack"],
-        createdAt: Date.now()
-      });
+        updatedAt: Date.now()
+      };
 
-      setStatusMsg("Project added to Firebase RTDB successfully!");
-      setIsAddingProject(false);
-      setNewProject({
-        title: "",
-        category: "Systems & Automation",
-        shortDesc: "",
-        tech: [],
-        infra: "Cloudflare",
-        links: { live: "", github: "" },
-        logo: "/logos/rgm.png",
-        gradient: "from-amber-100 via-amber-50 to-indigo-50"
-      });
-      setTechInput("");
+      if (editingKey) {
+        await set(ref(db, `projects/${editingKey}`), {
+          ...payload,
+          createdAt: (projects[editingKey] as any)?.createdAt || Date.now()
+        });
+        setStatusMsg("Project updated in Firebase RTDB successfully!");
+      } else {
+        const projectsRef = ref(db, "projects");
+        const newProjRef = push(projectsRef);
+        await set(newProjRef, {
+          ...payload,
+          createdAt: Date.now()
+        });
+        setStatusMsg("Project added to Firebase RTDB successfully!");
+      }
+
+      handleCancelForm();
       setTimeout(() => setStatusMsg(""), 4000);
     } catch (err) {
-      setStatusMsg("Failed to add project to Firebase.");
+      setStatusMsg("Failed to save project to Firebase.");
       console.error(err);
     }
   };
@@ -264,14 +310,24 @@ export default function AdminDashboard() {
                 <label className="block text-xs uppercase tracking-wider text-slate-600 mb-2 font-bold">
                   Admin Password
                 </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter administrator password..."
-                  required
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter administrator password..."
+                    required
+                    className="w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               <button
@@ -380,11 +436,23 @@ export default function AdminDashboard() {
 
           {activeTab === "projects" && (
             <button
-              onClick={() => setIsAddingProject(!isAddingProject)}
+              onClick={() => {
+                if (isAddingProject) {
+                  handleCancelForm();
+                } else {
+                  setIsAddingProject(true);
+                }
+              }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all shadow-sm"
             >
               <Plus className="w-4 h-4" />
-              <span>{isAddingProject ? "Cancel" : "Add Project"}</span>
+              <span>
+                {isAddingProject
+                  ? editingKey
+                    ? "Cancel Edit"
+                    : "Cancel"
+                  : "Add Project"}
+              </span>
             </button>
           )}
         </div>
@@ -392,18 +460,20 @@ export default function AdminDashboard() {
         {/* TAB 1: PROJECTS MANAGEMENT */}
         {activeTab === "projects" && (
           <div className="space-y-8">
-            {/* Create Project Inline Form */}
+            {/* Create / Edit Project Inline Form */}
             {isAddingProject && (
               <div className="bg-white border border-indigo-200 rounded-2xl p-6 shadow-xl animate-in fade-in slide-in-from-top-4">
                 <h3 className="text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-indigo-600" />
-                  Add Project to Firebase Database
+                  {editingKey ? "Edit Project in Firebase Database" : "Add Project to Firebase Database"}
                 </h3>
                 <p className="text-slate-600 text-xs mb-6">
-                  Items created here will instantly sync to your live European Firebase Realtime Database.
+                  {editingKey
+                    ? "Updating this item will immediately sync the new details to your live portfolio."
+                    : "Items created here will instantly sync to your live European Firebase Realtime Database."}
                 </p>
 
-                <form onSubmit={handleCreateProject} className="space-y-5">
+                <form onSubmit={handleSaveProject} className="space-y-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs uppercase tracking-wider text-slate-700 mb-1 font-bold">
@@ -723,7 +793,7 @@ export default function AdminDashboard() {
                   <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
                     <button
                       type="button"
-                      onClick={() => setIsAddingProject(false)}
+                      onClick={handleCancelForm}
                       className="px-4 py-2 border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold"
                     >
                       Cancel
@@ -732,7 +802,7 @@ export default function AdminDashboard() {
                       type="submit"
                       className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm shadow-sm"
                     >
-                      Save to Database
+                      {editingKey ? "Update Project" : "Save to Database"}
                     </button>
                   </div>
                 </form>
@@ -847,13 +917,24 @@ export default function AdminDashboard() {
                           )}
                         </div>
 
-                        <button
-                          onClick={() => handleDeleteProject(key)}
-                          className="text-rose-600 hover:text-rose-800 p-1 hover:bg-rose-50 rounded transition-colors"
-                          title="Delete project"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleStartEdit(key, item)}
+                            className="text-slate-600 hover:text-indigo-600 p-1.5 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1 font-semibold text-xs"
+                            title="Edit project"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                            <span>Edit</span>
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteProject(key)}
+                            className="text-rose-600 hover:text-rose-800 p-1.5 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Delete project"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
