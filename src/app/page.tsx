@@ -553,6 +553,7 @@ export default function HomePage() {
                           src={project.logo}
                           alt=""
                           fill
+                          unoptimized={typeof project.logo === "string" && (project.logo.startsWith("data:") || project.logo.startsWith("http"))}
                           className="object-cover blur-xl opacity-20 scale-125 transition-transform duration-500 group-hover:scale-135"
                         />
                       </div>
@@ -564,6 +565,7 @@ export default function HomePage() {
                             src={project.logo}
                             alt={`${project.title} logo`}
                             fill
+                            unoptimized={typeof project.logo === "string" && (project.logo.startsWith("data:") || project.logo.startsWith("http"))}
                             className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-sm"
                           />
                         </div>
@@ -696,6 +698,7 @@ export default function HomePage() {
                     alt={activeStoryProject.title}
                     width={36}
                     height={36}
+                    unoptimized={typeof activeStoryProject.logo === "string" && (activeStoryProject.logo.startsWith("data:") || activeStoryProject.logo.startsWith("http"))}
                     className="object-contain"
                   />
                 </div>

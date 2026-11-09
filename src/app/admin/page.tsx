@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/firebase";
@@ -27,7 +27,9 @@ import {
   DownloadCloud,
   Server,
   Activity,
-  ShieldCheck
+  ShieldCheck,
+  Upload,
+  Link2
 } from "lucide-react";
 import { PROJECTS } from "@/data/portfolioData";
 
@@ -97,6 +99,10 @@ export default function AdminDashboard() {
   const [manualColorStart, setManualColorStart] = useState("#fed7aa");
   const [manualColorEnd, setManualColorEnd] = useState("#e0e7ff");
   const [manualAngle, setManualAngle] = useState("135deg");
+
+  // Logo source mode
+  const [logoMode, setLogoMode] = useState<"upload" | "preset" | "url">("upload");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [newProject, setNewProject] = useState<FirebaseProject>({
     title: "",
@@ -181,9 +187,69 @@ export default function AdminDashboard() {
     setIsAuthenticated(false);
   };
 
+  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid image file (PNG, SVG, WebP, JPG).");
+      return;
+    }
+
+    if (file.type === "image/svg+xml") {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        if (result) {
+          setNewProject((prev) => ({ ...prev, logo: result }));
+        }
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const MAX_SIZE = 512;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height = Math.round((height * MAX_SIZE) / width);
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width = Math.round((width * MAX_SIZE) / height);
+            height = MAX_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          let dataUrl = canvas.toDataURL("image/webp", 0.92);
+          if (!dataUrl.startsWith("data:image/webp")) {
+            dataUrl = canvas.toDataURL("image/png");
+          }
+          setNewProject((prev) => ({ ...prev, logo: dataUrl }));
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleCancelForm = () => {
     setIsAddingProject(false);
     setEditingKey(null);
+    setLogoMode("upload");
     setNewProject({
       title: "",
       category: "Systems & Automation",
@@ -223,6 +289,17 @@ export default function AdminDashboard() {
     } else {
       setGradientMode("preset");
     }
+
+    if (project.logo?.startsWith("data:")) {
+      setLogoMode("upload");
+    } else if (PRESET_LOGOS.some((p) => p.path === project.logo)) {
+      setLogoMode("preset");
+    } else if (project.logo) {
+      setLogoMode("url");
+    } else {
+      setLogoMode("preset");
+    }
+
     window.scrollTo({ top: 120, behavior: "smooth" });
   };
 
@@ -604,23 +681,135 @@ export default function AdminDashboard() {
                       </select>
                     </div>
 
-                    <div>
-                      <label className="block text-xs uppercase tracking-wider text-slate-700 mb-1 font-bold">
-                        Project Logo Asset
-                      </label>
-                      <select
-                        value={newProject.logo}
-                        onChange={(e) =>
-                          setNewProject({ ...newProject, logo: e.target.value })
-                        }
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
-                      >
-                        {PRESET_LOGOS.map((l) => (
-                          <option key={l.path} value={l.path}>
-                            {l.name} ({l.path})
-                          </option>
-                        ))}
-                      </select>
+                    <div className="sm:col-span-2 p-4 rounded-xl bg-slate-50 border border-slate-200">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                        <div>
+                          <label className="block text-xs uppercase tracking-wider text-slate-800 font-bold">
+                            Project Logo Asset
+                          </label>
+                          <span className="text-xs text-slate-500">
+                            Upload from your device storage, pick a preset, or enter an external URL.
+                          </span>
+                        </div>
+
+                        {/* Mode Switcher */}
+                        <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-white">
+                          <button
+                            type="button"
+                            onClick={() => setLogoMode("upload")}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                              logoMode === "upload"
+                                ? "bg-indigo-600 text-white shadow-xs"
+                                : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Upload File</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setLogoMode("preset")}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                              logoMode === "preset"
+                                ? "bg-indigo-600 text-white shadow-xs"
+                                : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            <Layers className="w-3.5 h-3.5" />
+                            <span>Presets</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setLogoMode("url")}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                              logoMode === "url"
+                                ? "bg-indigo-600 text-white shadow-xs"
+                                : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            <Link2 className="w-3.5 h-3.5" />
+                            <span>Custom URL</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Upload from Device Mode */}
+                      {logoMode === "upload" && (
+                        <div className="space-y-3">
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                            onChange={handleLogoFileUpload}
+                            className="hidden"
+                          />
+
+                          <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className="border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-white hover:bg-indigo-50/40 rounded-xl p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                              <Upload className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-slate-800">
+                                Click to choose logo from your device
+                              </p>
+                              <p className="text-xs text-slate-500 mt-0.5">
+                                Select PNG, SVG, WebP, or JPG from local storage (auto-optimized)
+                              </p>
+                            </div>
+                          </div>
+
+                          {newProject.logo?.startsWith("data:") && (
+                            <div className="flex items-center justify-between text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-2 rounded-lg">
+                              <span className="flex items-center gap-1.5 font-medium">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                Custom logo loaded from device storage
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setNewProject({ ...newProject, logo: "/Logo v2.2.png" })}
+                                className="text-xs text-emerald-700 hover:text-red-600 font-semibold underline"
+                              >
+                                Reset to Default
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Presets Mode */}
+                      {logoMode === "preset" && (
+                        <select
+                          value={newProject.logo}
+                          onChange={(e) =>
+                            setNewProject({ ...newProject, logo: e.target.value })
+                          }
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
+                        >
+                          {PRESET_LOGOS.map((l) => (
+                            <option key={l.path} value={l.path}>
+                              {l.name} ({l.path})
+                            </option>
+                          ))}
+                        </select>
+                      )}
+
+                      {/* Custom URL Mode */}
+                      {logoMode === "url" && (
+                        <input
+                          type="text"
+                          value={newProject.logo}
+                          onChange={(e) =>
+                            setNewProject({ ...newProject, logo: e.target.value })
+                          }
+                          placeholder="https://example.com/logo.png or /logos/custom.svg"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
+                        />
+                      )}
                     </div>
 
                     <div>
@@ -902,6 +1091,7 @@ export default function AdminDashboard() {
                               src={newProject.logo}
                               alt=""
                               fill
+                              unoptimized={typeof newProject.logo === "string" && (newProject.logo.startsWith("data:") || newProject.logo.startsWith("http"))}
                               className="object-cover blur-xl opacity-20 scale-125"
                             />
                           </div>
@@ -915,6 +1105,7 @@ export default function AdminDashboard() {
                                 src={newProject.logo}
                                 alt="Logo Preview"
                                 fill
+                                unoptimized={typeof newProject.logo === "string" && (newProject.logo.startsWith("data:") || newProject.logo.startsWith("http"))}
                                 className="object-contain drop-shadow-sm"
                               />
                             </div>
@@ -1003,6 +1194,7 @@ export default function AdminDashboard() {
                                 src={item.logo}
                                 alt=""
                                 fill
+                                unoptimized={typeof item.logo === "string" && (item.logo.startsWith("data:") || item.logo.startsWith("http"))}
                                 className="object-cover blur-xl opacity-20 scale-125"
                               />
                             </div>
@@ -1016,6 +1208,7 @@ export default function AdminDashboard() {
                                   src={item.logo}
                                   alt={item.title}
                                   fill
+                                  unoptimized={typeof item.logo === "string" && (item.logo.startsWith("data:") || item.logo.startsWith("http"))}
                                   className="object-contain drop-shadow-xs"
                                 />
                               </div>
