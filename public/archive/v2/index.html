@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wycliffe's Portfolio</title>
-    <script>document.documentElement.classList.add('js-enabled');</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-mode">
     <!-- Header -->
@@ -118,10 +114,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
     <!-- Hero Section -->
-    <section class="hero" style="position: relative; overflow: hidden;">
-        <div id="hero-canvas-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></div>
-        <div class="container" style="position: relative; z-index: 2;">
-            <h1>Welcome to My Portfolio</h1>
+    <section class="hero">
+        <div class="container">
+            <h1>Innovator, Learner & Educator</h1>
             <p>I do DIY projects, share what I learn, and create educational content to help others grow their development skills alongside me.</p>
             
             <div class="search-container" id="heroSearchContainer">
@@ -143,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;">
                 <h2 class="section-title">My Projects</h2>
-                <a href="projects.html" class="btn">View All Projects</a>
+                <a href="All_Projects/index.html" class="btn">View All Projects</a>
             </div>
 
 
@@ -156,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <a href="https://wylibrary.vercel.app/" style="text-decoration: none; color: inherit;">
                     <div class="project-card" data-search="Wycliffe's e-library library elibrary">
                         <div class="project-img">
-                            <img src="assets/e-library.png" alt="Project 4">
+                            <img src="e-library.png" alt="Project 4">
                         </div>
                         <div class="project-content">
                             <h3>e-library</h3>
@@ -174,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <a href="ReportGenDownloads.html" style="text-decoration: none; color: inherit;">
                         <div class="project-card" data-search="Report Generator Tool Excel VBA Automation">
                             <div class="project-img">
-                                <img src="assets/ReportGenICO.png" alt="Project 1">
+                                <img src="ReportGenICO.png" alt="Project 1">
                             </div>
                             <div class="project-content">
                                 <h3>Report Generator Tool</h3>
@@ -189,10 +184,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </a>
 
                     <!-- Project 2 -->
-                    <a href="assets/Logo v2.2.png" style="text-decoration: none; color: inherit;">
+                    <a href="Logo v2.2.png" style="text-decoration: none; color: inherit;">
                         <div class="project-card" data-search="Logo Design Star Private Secondary School">
                             <div class="project-img">
-                                <img src="assets/Logo v2.2.png" alt="Project 2">
+                                <img src="Logo v2.2.png" alt="Project 2">
                             </div>
                             <div class="project-content">
                                 <h3>A logo for Star</h3>
@@ -210,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <a href="https://star-pdfs.onrender.com/" style="text-decoration: none; color: inherit;">
                         <div class="project-card" data-search="Website School Web Design">
                             <div class="project-img">
-                                <img src="assets/StarPdf.png" alt="Project 3">
+                                <img src="StarPdf.png" alt="Project 3">
                             </div>
                             <div class="project-content">
                                 <h3>Reports Portal</h3>
@@ -295,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h2 class="section-title">About Me</h2>
             <div class="about-content">
                 <div class="about-img">
-                    <img src="assets/profile.png" alt="Profile Photo">
+                    <img src="profile.png" alt="Profile Photo">
                 </div>
                 <div class="about-text">
                     <h3>Hi, I'm Wycliffe Mwanganda</h3>
@@ -355,217 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-    <script>
-        // Ensure three.js particles and geometry load cleanly
-        (function initThreeJS() {
-            const container = document.getElementById('hero-canvas-container');
-            const heroSection = document.querySelector('.hero');
-            if (!container || !heroSection || typeof THREE === 'undefined') return;
-
-            let width = heroSection.clientWidth;
-            let height = heroSection.clientHeight;
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-            camera.position.z = 400;
-
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(width, height);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            container.appendChild(renderer.domElement);
-
-            // Particle field geometry
-            const particleCount = 1000;
-            const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(particleCount * 3);
-
-            for (let i = 0; i < particleCount * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 800; // X
-                positions[i + 1] = (Math.random() - 0.5) * 800; // Y
-                positions[i + 2] = (Math.random() - 0.5) * 800; // Z
-            }
-
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-            // Particle material - tiny white/blue glowing dots
-            const material = new THREE.PointsMaterial({
-                color: 0x3b9eff,
-                size: 2,
-                transparent: true,
-                opacity: 0.6,
-                blending: THREE.AdditiveBlending
-            });
-
-            const particles = new THREE.Points(geometry, material);
-            scene.add(particles);
-
-            // Floating 3D Wireframe Icosahedron
-            const shapeGeom = new THREE.IcosahedronGeometry(80, 1);
-            const shapeMat = new THREE.MeshBasicMaterial({
-                color: 0x3b9eff,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.12
-            });
-            const icosahedron = new THREE.Mesh(shapeGeom, shapeMat);
-            icosahedron.position.set(220, 50, 0);
-            scene.add(icosahedron);
-
-            // Second smaller torus knot on the left
-            const shapeGeom2 = new THREE.TorusGeometry(35, 10, 8, 24);
-            const shapeMat2 = new THREE.MeshBasicMaterial({
-                color: 0x7bc9ff,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.08
-            });
-            const torus = new THREE.Mesh(shapeGeom2, shapeMat2);
-            torus.position.set(-250, -60, 50);
-            scene.add(torus);
-
-            // Interaction vars
-            let mouseX = 0;
-            let mouseY = 0;
-            let targetX = 0;
-            let targetY = 0;
-
-            heroSection.addEventListener('mousemove', (e) => {
-                const rect = heroSection.getBoundingClientRect();
-                mouseX = (e.clientX - rect.left - width / 2) * 0.2;
-                mouseY = (e.clientY - rect.top - height / 2) * 0.2;
-            });
-
-            heroSection.addEventListener('mouseleave', () => {
-                mouseX = 0;
-                mouseY = 0;
-            });
-
-            // Animation Loop
-            function animate() {
-                requestAnimationFrame(animate);
-
-                // Slow rotation of background elements
-                particles.rotation.y += 0.0005;
-                particles.rotation.x += 0.0002;
-                icosahedron.rotation.x += 0.002;
-                icosahedron.rotation.y += 0.003;
-                torus.rotation.x += 0.004;
-                torus.rotation.z += 0.002;
-
-                // Smooth camera movement based on mouse (parallax)
-                targetX += (mouseX - targetX) * 0.05;
-                targetY += (mouseY - targetY) * 0.05;
-
-                camera.position.x = targetX;
-                camera.position.y = -targetY;
-                camera.lookAt(scene.position);
-
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            // Window resize handler
-            window.addEventListener('resize', () => {
-                width = heroSection.clientWidth;
-                height = heroSection.clientHeight;
-                camera.aspect = width / height;
-                camera.updateProjectionMatrix();
-                renderer.setSize(width, height);
-            });
-        })();
-
-        // Scroll Animations using Anime.js
-        (function initScrollAnimations() {
-            if (typeof anime === 'undefined') return;
-
-            // Hero entrance animations
-            anime.timeline({
-                easing: 'easeOutQuad'
-            })
-            .add({
-                targets: '.hero h1',
-                translateY: [40, 0],
-                opacity: [0, 1],
-                duration: 800,
-                delay: 200
-            })
-            .add({
-                targets: '.hero p',
-                translateY: [30, 0],
-                opacity: [0, 1],
-                duration: 700
-            }, '-=500')
-            .add({
-                targets: '#heroSearchContainer',
-                scale: [0.95, 1],
-                opacity: [0, 1],
-                duration: 600
-            }, '-=400')
-            .add({
-                targets: '.hero .btn',
-                translateY: [20, 0],
-                opacity: [0, 1],
-                duration: 500
-            }, '-=400');
-
-            // Setup intersection observer for other sections
-            const sections = [
-                {
-                    class: 'projects',
-                    targets: '.project-card',
-                    stagger: 120
-                },
-                {
-                    class: 'tutorials',
-                    targets: '.tutorial-card',
-                    stagger: 100
-                },
-                {
-                    class: 'about',
-                    targets: ['.about-img', '.about-text h3', '.about-text p'],
-                    stagger: 150
-                },
-                {
-                    class: 'contact-cta',
-                    targets: '.contact-cta-content > *',
-                    stagger: 100
-                }
-            ];
-
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px -50px -50px 0px',
-                threshold: 0.1
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const sec = sections.find(s => entry.target.classList.contains(s.class));
-                        if (sec) {
-                            anime({
-                                targets: sec.targets,
-                                translateY: [40, 0],
-                                opacity: [0, 1],
-                                delay: anime.stagger(sec.stagger),
-                                easing: 'easeOutQuad',
-                                duration: 850
-                            });
-                            observer.unobserve(entry.target);
-                        }
-                    }
-                });
-            }, observerOptions);
-
-            sections.forEach(sec => {
-                const elem = document.querySelector('.' + sec.class);
-                if (elem) observer.observe(elem);
-            });
-        })();
-    </script>
-    <script src="js/index.js"></script>
+    <script src="index.js"></script>
 </body>
 
 </html>
