@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/firebase";
-import { ref, onValue, push, remove, set } from "firebase/database";
+import { ref, onValue, push, remove, set, update } from "firebase/database";
 import {
   Lock,
   LogOut,
@@ -23,8 +23,13 @@ import {
   Sliders,
   Eye,
   EyeOff,
-  Pencil
+  Pencil,
+  DownloadCloud,
+  Server,
+  Activity,
+  ShieldCheck
 } from "lucide-react";
+import { PROJECTS } from "@/data/portfolioData";
 
 interface FirebaseProject {
   id?: string;
@@ -40,6 +45,8 @@ interface FirebaseProject {
   thumbnail?: string;
   logo?: string;
   gradient?: string;
+  showOnHome?: boolean;
+  featured?: boolean;
 }
 
 const BRAND_GRADIENT_PRESETS = [
@@ -96,7 +103,8 @@ export default function AdminDashboard() {
     infra: "Cloudflare",
     links: { live: "", github: "" },
     logo: "/logos/rgm.png",
-    gradient: "from-amber-100 via-amber-50 to-indigo-50"
+    gradient: "from-amber-100 via-amber-50 to-indigo-50",
+    showOnHome: true
   });
   const [techInput, setTechInput] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
@@ -180,7 +188,8 @@ export default function AdminDashboard() {
       infra: "Cloudflare",
       links: { live: "", github: "" },
       logo: "/logos/rgm.png",
-      gradient: "from-amber-100 via-amber-50 to-indigo-50"
+      gradient: "from-amber-100 via-amber-50 to-indigo-50",
+      showOnHome: true
     });
     setTechInput("");
   };
@@ -196,7 +205,8 @@ export default function AdminDashboard() {
       infra: project.infra || "Cloudflare",
       links: project.links || { live: "", github: "" },
       logo: project.logo || "/logos/rgm.png",
-      gradient: project.gradient || "from-amber-100 via-amber-50 to-indigo-50"
+      gradient: project.gradient || "from-amber-100 via-amber-50 to-indigo-50",
+      showOnHome: project.showOnHome !== false && project.featured !== false
     });
     setTechInput(project.tech ? project.tech.join(", ") : "");
     if (
@@ -208,6 +218,47 @@ export default function AdminDashboard() {
       setGradientMode("preset");
     }
     window.scrollTo({ top: 120, behavior: "smooth" });
+  };
+
+  const handleSeedDefaultProjects = async () => {
+    if (
+      !confirm(
+        "Import all 9 default portfolio projects into Firebase Realtime Database? This will ensure all projects can be edited and toggled here in the dashboard."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const updates: Record<string, any> = {};
+      PROJECTS.forEach((proj) => {
+        updates[`projects/${proj.id}`] = {
+          title: proj.title,
+          category: proj.category,
+          shortDesc: proj.description,
+          tagline: proj.tagline,
+          description: proj.description,
+          tech: proj.tech,
+          infra: proj.infra,
+          logo: proj.logo,
+          thumbnail: proj.thumbnail,
+          gradient: proj.gradient || "from-amber-100 via-amber-50 to-indigo-50",
+          links: proj.links,
+          showOnHome: proj.showOnHome !== false && proj.featured !== false,
+          featured: proj.featured !== false && proj.showOnHome !== false,
+          metrics: proj.metrics || null,
+          story: proj.story || null,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+      });
+
+      await update(ref(db), updates);
+      setStatusMsg("Successfully imported all 9 default projects into Firebase Realtime Database!");
+    } catch (err) {
+      console.error(err);
+      setStatusMsg("Failed to seed projects into Firebase.");
+    }
   };
 
   const handleSaveProject = async (e: React.FormEvent) => {
@@ -222,6 +273,8 @@ export default function AdminDashboard() {
 
       const payload = {
         ...newProject,
+        showOnHome: newProject.showOnHome !== false,
+        featured: newProject.showOnHome !== false,
         tech: techArray.length ? techArray : ["Full-Stack"],
         updatedAt: Date.now()
       };
@@ -398,7 +451,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Tab Controls */}
-        <div className="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-slate-200 pb-4">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab("projects")}
@@ -429,31 +482,43 @@ export default function AdminDashboard() {
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               }`}
             >
-              <Users className="w-4 h-4" />
-              <span>Active Auth & Users</span>
+              <Activity className="w-4 h-4" />
+              <span>System &amp; Cloud Status</span>
             </button>
           </div>
 
           {activeTab === "projects" && (
-            <button
-              onClick={() => {
-                if (isAddingProject) {
-                  handleCancelForm();
-                } else {
-                  setIsAddingProject(true);
-                }
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              <span>
-                {isAddingProject
-                  ? editingKey
-                    ? "Cancel Edit"
-                    : "Cancel"
-                  : "Add Project"}
-              </span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSeedDefaultProjects}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs transition-colors shadow-xs"
+                title="Import all 9 default projects into Firebase RTDB"
+              >
+                <DownloadCloud className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Import Standard Projects</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (isAddingProject) {
+                    handleCancelForm();
+                  } else {
+                    setIsAddingProject(true);
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                <span>
+                  {isAddingProject
+                    ? editingKey
+                      ? "Cancel Edit"
+                      : "Cancel"
+                    : "Add Project"}
+                </span>
+              </button>
+            </div>
           )}
         </div>
 
@@ -611,6 +676,31 @@ export default function AdminDashboard() {
                       required
                       className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
                     ></textarea>
+                  </div>
+
+                  {/* Homepage Display Toggle */}
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
+                    <div>
+                      <span className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        Display on Homepage
+                      </span>
+                      <span className="text-xs text-slate-500 block mt-0.5">
+                        When enabled, this project appears on the main homepage. When disabled, it is only listed on the /projects archive.
+                      </span>
+                    </div>
+
+                    <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={newProject.showOnHome !== false}
+                        onChange={(e) =>
+                          setNewProject({ ...newProject, showOnHome: e.target.checked })
+                        }
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
                   </div>
 
                   {/* BRAND GRADIENT CONTROLS */}
@@ -849,9 +939,22 @@ export default function AdminDashboard() {
                           }`}
                           style={isCustomCardInline ? { background: cardGradient } : undefined}
                         >
-                          <span className="absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-slate-800 border border-white/80">
-                            {item.infra || "Cloudflare"}
-                          </span>
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 text-slate-800 border border-white/80">
+                              {item.infra || "Cloudflare"}
+                            </span>
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                item.showOnHome !== false && item.featured !== false
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                  : "bg-slate-100 text-slate-600 border-slate-200"
+                              }`}
+                            >
+                              {item.showOnHome !== false && item.featured !== false
+                                ? "Homepage"
+                                : "Archive Only"}
+                            </span>
+                          </div>
 
                           {item.logo && (
                             <div className="relative w-16 h-16">
@@ -944,79 +1047,56 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* TAB 2: ACTIVE USERS & AUTH MONITOR */}
+        {/* TAB 2: SYSTEM & CLOUD STATUS */}
         {activeTab === "users" && (
-          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-6">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-slate-900">Active Users Dashboard</h3>
-                <p className="text-slate-600 text-xs">
-                  Inspect authenticated client sessions and user activity logged via Google Auth.
+                <h3 className="text-lg font-bold text-slate-900">System &amp; Cloud Deployment Status</h3>
+                <p className="text-slate-600 text-xs mt-0.5">
+                  Live connectivity monitor for Firebase Realtime Database and production edge routing.
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-xs text-slate-600 font-mono">Realtime Listener Active</span>
+                <span className="text-xs text-slate-600 font-mono">All Systems Operational</span>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-700">
-                <thead className="text-xs uppercase bg-slate-50 text-slate-600 border-b border-slate-200">
-                  <tr>
-                    <th className="px-4 py-3 rounded-l-lg font-bold">User / Client</th>
-                    <th className="px-4 py-3 font-bold">Auth Provider</th>
-                    <th className="px-4 py-3 font-bold">Session Status</th>
-                    <th className="px-4 py-3 rounded-r-lg font-bold">Last Active</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-xs">
-                  <tr className="hover:bg-slate-50">
-                    <td className="px-4 py-3 flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
-                        W
-                      </div>
-                      <div>
-                        <div className="font-sans font-semibold text-slate-900">Admin Session</div>
-                        <div className="text-[11px] text-slate-500">wycliffemwanganda@gmail.com</div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">Vercel Session (Admin)</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
-                        Online
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-500">Just now</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50">
-                    <td className="px-4 py-3 flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-                        G
-                      </div>
-                      <div>
-                        <div className="font-sans font-semibold text-slate-900">Firebase Google User</div>
-                        <div className="text-[11px] text-slate-500">wysportfolio.firebaseapp.com</div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">Google OAuth 2.0</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                        Idle
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-500">Recent</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-1">
+                  <Cloud className="w-4 h-4 text-indigo-600" />
+                  Database
+                </div>
+                <div className="font-bold text-slate-900 text-sm">Firebase RTDB (Europe)</div>
+                <div className="text-xs text-emerald-700 font-medium mt-1">Spark Plan ($0/mo) Active</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-1">
+                  <Server className="w-4 h-4 text-sky-600" />
+                  Frontend &amp; SSR
+                </div>
+                <div className="font-bold text-slate-900 text-sm">Vercel Global Edge</div>
+                <div className="text-xs text-emerald-700 font-medium mt-1">Automatic CI/CD via GitHub</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-1">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  Admin Security
+                </div>
+                <div className="font-bold text-slate-900 text-sm">HttpOnly Session Cookie</div>
+                <div className="text-xs text-slate-600 font-medium mt-1">Master password authenticated</div>
+              </div>
             </div>
 
-            <div className="mt-8 p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs text-slate-600">
-              <div className="flex items-center gap-2">
-                <Cloud className="w-4 h-4 text-indigo-600" />
-                <span>Connected to Firebase European RTDB (`wysportfolio-default-rtdb`)</span>
-              </div>
-              <span className="font-mono text-slate-500">Spark Plan: $0 / Month</span>
+            <div className="p-4 rounded-xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1">
+              <span className="font-bold block">About User Tracking &amp; Authentication</span>
+              <p className="text-indigo-800 leading-relaxed">
+                WysPortfolio is a public engineering showcase. Visitors browse anonymously without needing user accounts, keeping performance blazing fast with zero registration barriers. Real visitor traffic and Core Web Vitals are tracked privacy-first via Vercel Web Analytics.
+              </p>
             </div>
           </div>
         )}

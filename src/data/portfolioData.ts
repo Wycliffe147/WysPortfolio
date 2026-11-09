@@ -10,6 +10,7 @@ export interface ProjectItem {
   logo: string;
   gradient?: string;
   featured?: boolean;
+  showOnHome?: boolean;
   links: {
     live?: string;
     github?: string;

@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { db } from "@/lib/firebase";
+import { ref, onValue } from "firebase/database";
 import {
   ExternalLink,
   Server,
@@ -30,10 +32,34 @@ import {
 } from "lucide-react";
 import { GithubIcon } from "@/components/GithubIcon";
 import { PROJECTS, CLIENT_PARTNERS, ProjectItem } from "@/data/portfolioData";
+import { mergeProjects } from "@/lib/projectUtils";
 
 export default function HomePage() {
+  const [allProjects, setAllProjects] = useState<ProjectItem[]>(PROJECTS);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [activeStoryProject, setActiveStoryProject] = useState<ProjectItem | null>(null);
+
+  useEffect(() => {
+    const projectsRef = ref(db, "projects");
+    const unsubscribe = onValue(
+      projectsRef,
+      (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          const merged = mergeProjects(val, PROJECTS);
+          setAllProjects(merged);
+        } else {
+          setAllProjects(PROJECTS);
+        }
+      },
+      (err) => {
+        console.warn("Firebase listener warning:", err);
+        setAllProjects(PROJECTS);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   const categories = [
     "All",
@@ -43,10 +69,13 @@ export default function HomePage() {
     "AI & Desktop"
   ];
 
+  // Only display projects marked to show on home (or default true)
+  const homeProjects = allProjects.filter((p) => p.showOnHome !== false);
+
   const filteredProjects =
     selectedCategory === "All"
-      ? PROJECTS
-      : PROJECTS.filter((p) => p.category === selectedCategory);
+      ? homeProjects
+      : homeProjects.filter((p) => p.category === selectedCategory);
 
   const getInfraBadge = (infra: ProjectItem["infra"]) => {
     switch (infra) {
@@ -140,6 +169,12 @@ export default function HomePage() {
             <a href="#systems" className="hover:text-violet-700 transition-colors">
               Systems
             </a>
+            <Link href="/projects" className="hover:text-violet-700 transition-colors flex items-center gap-1.5">
+              <span>All Projects</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-mono font-semibold">
+                {allProjects.length}
+              </span>
+            </Link>
             <a href="#clouds" className="hover:text-violet-700 transition-colors">
               Clouds in Concert
             </a>
@@ -467,8 +502,8 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Category filter pills */}
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter projects">
+            {/* Category filter pills & View All shortcut */}
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter projects">
               {categories.map((cat) => (
                 <button
                   key={cat}
@@ -482,6 +517,14 @@ export default function HomePage() {
                   {cat}
                 </button>
               ))}
+
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-violet-50 text-violet-700 border border-violet-200 hover:bg-violet-100 transition-colors ml-auto sm:ml-0"
+              >
+                <span>View All ({allProjects.length})</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
 
@@ -609,9 +652,32 @@ export default function HomePage() {
               );
             })}
           </div>
-        </section>
 
-        {/* ARCHITECTURE STORY MODAL (Claude 3-Color Themed Breakdown) */}
+          {/* Bottom View All Projects CTA Banner */}
+          <div className="mt-14 text-center">
+            <div className="inline-flex flex-col sm:flex-row items-center justify-between gap-6 p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl max-w-3xl w-full mx-auto shadow-xl">
+              <div className="text-left">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400">
+                  Full Catalog & Archives
+                </span>
+                <h3 className="font-display text-xl sm:text-2xl font-bold text-white mt-1">
+                  Explore all {allProjects.length} systems & tools
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-md">
+                  Showing {homeProjects.length} featured on homepage. Browse the complete catalog with live search, filters, and architecture notes.
+                </p>
+              </div>
+
+              <Link
+                href="/projects"
+                className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-all shadow-md hover:shadow-lg group"
+              >
+                <span>View All Projects</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </div>
+        </section>
         {activeStoryProject && activeStoryProject.story && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-xs">
             <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-200">
