@@ -5,7 +5,11 @@ export const metadata: Metadata = {
   title: "Wycliffe Mwanganda | Systems Engineer & Multi-Cloud Architect",
   description: "Systems Engineer and Multi-Cloud Architect building high-speed production systems, automated workflows, and edge platforms across Cloudflare, Render, and Vercel with zero cloud waste.",
   icons: {
-    icon: "/profile.png"
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/profile.png", sizes: "192x192", type: "image/png" }
+    ],
+    apple: "/profile.png"
   }
 };
 
