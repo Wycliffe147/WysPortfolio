@@ -144,7 +144,13 @@ export default function AllProjectsPage() {
           </Link>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200">
+            <Link
+              href="/journey"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200 transition-colors"
+            >
+              The Journey
+            </Link>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
               {allProjects.length} Total Systems
             </span>
             <Link
@@ -450,12 +456,23 @@ export default function AllProjectsPage() {
               <span className="text-xs text-slate-500">
                 Tech: {activeStoryProject.tech.slice(0, 3).join(", ")}
               </span>
-              <button
-                onClick={() => setActiveStoryProject(null)}
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-full transition-colors"
-              >
-                Close
-              </button>
+              <div className="flex items-center gap-2">
+                {activeStoryProject.id === "wysportfolio-evolution" && (
+                  <Link
+                    href="/journey"
+                    className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-full transition-colors flex items-center gap-1.5"
+                  >
+                    <span>Explore The Journey</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                )}
+                <button
+                  onClick={() => setActiveStoryProject(null)}
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-full transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -468,6 +485,9 @@ export default function AllProjectsPage() {
           <div className="flex items-center gap-4">
             <Link href="/" className="hover:text-slate-900 transition-colors">
               Home
+            </Link>
+            <Link href="/journey" className="hover:text-violet-700 font-semibold transition-colors">
+              The Journey
             </Link>
             <Link href="/admin" className="hover:text-slate-900 transition-colors">
               Admin

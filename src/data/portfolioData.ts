@@ -364,5 +364,30 @@ export const PROJECTS: ProjectItem[] = [
       solution: "Built a macro-driven Excel workbook with VBA batch processing and integrated WPPConnect to dispatch report cards to parents over WhatsApp from a Windows PC.",
       impact: "This project directly evolved into report-generator-web and later into the full School OS Malawi platform - a complete lineage born from one spreadsheet."
     }
+  },
+  {
+    id: "wysportfolio-evolution",
+    sortOrder: 13,
+    title: "Wy's Portfolio & Living Archive",
+    tagline: "7 Generations of Preserved History from USB to Multi-Cloud",
+    description: "The self-documented journey of a Malawian builder. Originally created to distribute an automated school report generator without physical USB drives, it evolved into a 7-generation edge archive and living engineering canvas.",
+    category: "Edge & Web",
+    infra: "Vercel",
+    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Firebase RTDB", "Vercel Edge", "Git Time Machine"],
+    thumbnail: "/logos/wyport.png",
+    logo: "/logos/wyport.png",
+    gradient: "from-violet-100 via-indigo-50 to-slate-50",
+    featured: true,
+    showOnHome: true,
+    metrics: "7 Preserved Deployments · 2025-2026 Archive",
+    links: {
+      live: "/journey",
+      github: "https://github.com/Wycliffe147/WysPortfolio"
+    },
+    story: {
+      challenge: "In Form 3 at Star Secondary School, physical USB flash drives failed to reliably distribute school report cards and logos to busy administrators.",
+      solution: "Built a dedicated web presence that outgrew a single download link, evolving into a living multi-cloud archive preserving every stage of software growth.",
+      impact: "7 historical editions deployed to edge, zero-waste multi-cloud design, and the foundational distribution root of Malawi School OS."
+    }
   }
 ];

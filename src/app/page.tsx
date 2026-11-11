@@ -175,6 +175,12 @@ export default function HomePage() {
                 {allProjects.length}
               </span>
             </Link>
+            <Link href="/journey" className="hover:text-violet-700 transition-colors flex items-center gap-1.5">
+              <span>The Journey</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 text-[10px] font-mono font-semibold">
+                7 Eras
+              </span>
+            </Link>
             <a href="#clouds" className="hover:text-violet-700 transition-colors">
               Clouds in Concert
             </a>
@@ -750,12 +756,23 @@ export default function HomePage() {
                   ))}
                 </div>
 
-                <button
-                  onClick={() => setActiveStoryProject(null)}
-                  className="px-5 py-2 bg-slate-900 hover:bg-violet-700 text-white text-xs font-semibold rounded-full transition-colors"
-                >
-                  Got it
-                </button>
+                <div className="flex items-center gap-2">
+                  {activeStoryProject.id === "wysportfolio-evolution" && (
+                    <Link
+                      href="/journey"
+                      className="px-5 py-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-full transition-colors inline-flex items-center gap-1.5"
+                    >
+                      <span>Explore The Journey</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => setActiveStoryProject(null)}
+                    className="px-5 py-2 bg-slate-900 hover:bg-violet-700 text-white text-xs font-semibold rounded-full transition-colors"
+                  >
+                    Got it
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -978,6 +995,12 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-6">
+            <Link
+              href="/journey"
+              className="hover:text-violet-700 font-semibold transition-colors"
+            >
+              The Journey
+            </Link>
             <a
               href="https://github.com/Wycliffe147"
               target="_blank"
