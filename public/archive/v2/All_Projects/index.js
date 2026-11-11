@@ -63,10 +63,8 @@ if (document.getElementById('tutorialsContainer')) {
 const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 
-// Function to get all project cards (updated dynamically)
-function getAllCards() {
-    return document.querySelectorAll('.project-card');
-}
+// All project cards (only projects on All_Projects.html)
+const allCards = document.querySelectorAll('.project-card');
 
 // Highlight text function
 function highlightText(text, searchTerm) {
@@ -84,7 +82,6 @@ function performSearch(searchTerm) {
     }
     
     const results = [];
-    const allCards = getAllCards(); // Get cards dynamically
     
     allCards.forEach(card => {
         const searchData = card.getAttribute('data-search').toLowerCase();
@@ -127,8 +124,6 @@ function displayResults(results, searchTerm) {
             `;
             
             resultElement.addEventListener('click', () => {
-                const allCards = getAllCards(); // Get cards dynamically
-                
                 // First ensure all cards are visible
                 allCards.forEach(card => card.style.display = '');
                 
@@ -176,7 +171,6 @@ if (searchInput && searchResults) {
     searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const searchTerm = searchInput.value.trim().toLowerCase();
-            const allCards = getAllCards(); // Get cards dynamically
             
             if (!searchTerm) {
                 // Show all if search is empty
@@ -199,8 +193,7 @@ if (searchInput && searchResults) {
             });
             
             // Scroll to projects section if there are results
-            const visibleCard = document.querySelector('.project-card:not([style*="display: none"])');
-            if (visibleCard && document.getElementById('projects')) {
+            if (document.querySelector('.project-card[style=""]')) {
                 document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });
             }
             
@@ -499,5 +492,3 @@ if (typeof module !== 'undefined' && module.exports) {
         initializeContactLinkHandler
     };
 }
-
-
