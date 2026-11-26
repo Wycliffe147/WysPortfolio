@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "bundle": "node make-bundle.mjs",
+    "bundle:staging": "node make-bundle.mjs staging",
+    "bundle:main": "node make-bundle.mjs main"
   },
   "dependencies": {
     "firebase": "^13.2.0",

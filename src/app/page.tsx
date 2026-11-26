@@ -28,13 +28,15 @@ import {
   Check,
   ChevronRight,
   Layers,
-  ArrowUpRight
+  ArrowUpRight,
+  Menu
 } from "lucide-react";
 import { GithubIcon } from "@/components/GithubIcon";
 import { PROJECTS, CLIENT_PARTNERS, ProjectItem } from "@/data/portfolioData";
 import { mergeProjects } from "@/lib/projectUtils";
 
 export default function HomePage() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [allProjects, setAllProjects] = useState<ProjectItem[]>(PROJECTS);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [activeStoryProject, setActiveStoryProject] = useState<ProjectItem | null>(null);
@@ -136,10 +138,10 @@ export default function HomePage() {
       <div className="mesh-backdrop" aria-hidden="true" />
 
       {/* Top Navigation */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/70 border-b border-slate-200/70">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="#top" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-violet-500/20 shadow-sm flex items-center justify-center bg-gradient-to-br from-violet-600 via-indigo-600 to-emerald-500 text-white font-bold text-sm">
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/80 border-b border-slate-200/70">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3">
+          <Link href="#top" className="flex items-center gap-2.5 group min-w-0" onClick={() => setMenuOpen(false)}>
+            <div className="relative w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full overflow-hidden ring-2 ring-violet-500/20 shadow-sm flex items-center justify-center bg-gradient-to-br from-violet-600 via-indigo-600 to-emerald-500 text-white font-bold text-sm">
               <Image
                 src="/profile.png"
                 alt="Wycliffe Mwanganda"
@@ -148,14 +150,14 @@ export default function HomePage() {
                 priority
               />
             </div>
-            <div>
-              <span className="font-display font-bold text-slate-900 tracking-tight block text-sm sm:text-base group-hover:text-violet-700 transition-colors">
+            <div className="min-w-0 leading-tight">
+              <span className="font-display font-bold text-slate-900 tracking-tight block truncate text-[15px] sm:text-base group-hover:text-violet-700 transition-colors">
                 Wycliffe Mwanganda
               </span>
-              <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="ping-radar absolute h-2 w-2 rounded-full bg-emerald-500 opacity-75"></span>
-                  <span className="relative h-2 w-2 rounded-full bg-emerald-500"></span>
+              <span className="text-[11px] sm:text-xs text-emerald-700 font-semibold flex items-center gap-1.5 whitespace-nowrap">
+                <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0">
+                  <span className="ping-radar absolute h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                  <span className="relative h-full w-full rounded-full bg-emerald-500"></span>
                 </span>
                 Open for new projects
               </span>
@@ -189,30 +191,108 @@ export default function HomePage() {
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <a
               href="https://github.com/Wycliffe147"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full border border-slate-200 bg-white transition-colors"
+              className="hidden sm:inline-flex p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full border border-slate-200 bg-white transition-colors"
               title="GitHub Profile"
             >
               <GithubIcon className="w-4 h-4" />
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-violet-700 text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm hover:shadow transition-all"
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-violet-700 text-white text-sm font-semibold rounded-full shadow-sm hover:shadow transition-all"
             >
               <span>Start a project</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-slate-200 bg-white text-slate-800 active:scale-95 transition"
+            >
+              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile menu panel */}
+        {menuOpen && (
+          <div className="md:hidden border-t border-slate-200/70 bg-white/95 backdrop-blur-xl">
+            <nav className="max-w-7xl mx-auto px-4 py-3 flex flex-col" aria-label="Mobile navigation">
+              {[
+                { label: "Clients", href: "#clients" },
+                { label: "Systems", href: "#systems" },
+                { label: "Clouds in Concert", href: "#clouds" },
+                { label: "Contact", href: "#contact" },
+              ].map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-between py-3 text-[15px] font-semibold text-slate-800 border-b border-slate-100"
+                >
+                  {l.label}
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                </a>
+              ))}
+              <Link
+                href="/projects"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-between py-3 text-[15px] font-semibold text-slate-800 border-b border-slate-100"
+              >
+                <span className="flex items-center gap-2">
+                  All Projects
+                  <span className="px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-mono font-semibold">
+                    {allProjects.length}
+                  </span>
+                </span>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+              </Link>
+              <Link
+                href="/journey"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-between py-3 text-[15px] font-semibold text-slate-800"
+              >
+                <span className="flex items-center gap-2">
+                  The Journey
+                  <span className="px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 text-[10px] font-mono font-semibold">
+                    7 Eras
+                  </span>
+                </span>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+              </Link>
+              <div className="grid grid-cols-[1fr_auto] gap-2 pt-3 pb-1 sm:hidden">
+                <a
+                  href="#contact"
+                  onClick={() => setMenuOpen(false)}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-slate-900 text-white text-sm font-semibold rounded-full"
+                >
+                  <span>Start a project</span>
+                  <ArrowUpRight className="w-4 h-4" />
+                </a>
+                <a
+                  href="https://github.com/Wycliffe147"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub Profile"
+                  className="inline-flex items-center justify-center w-12 rounded-full border border-slate-200 bg-white text-slate-700"
+                >
+                  <GithubIcon className="w-4 h-4" />
+                </a>
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       <main id="top" className="relative z-10">
         {/* HERO SECTION */}
-        <section className="pt-12 pb-16 md:pt-20 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <section className="pt-8 pb-14 md:pt-20 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200/90 text-slate-700 text-xs font-semibold shadow-xs">
@@ -233,10 +313,10 @@ export default function HomePage() {
                 fast on low bandwidth and cost almost nothing to run.
               </p>
 
-              <div className="flex flex-wrap gap-3 pt-2">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 pt-2">
                 <a
                   href="#systems"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-violet-700 text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-all text-sm"
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-slate-900 hover:bg-violet-700 text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-all text-sm"
                 >
                   <span>See the systems</span>
                   <ArrowRight className="w-4 h-4" />
@@ -244,7 +324,7 @@ export default function HomePage() {
 
                 <a
                   href="#contact"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-800 font-semibold rounded-full border border-slate-300 shadow-xs hover:border-violet-600 transition-all text-sm"
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-white hover:bg-slate-50 text-slate-800 font-semibold rounded-full border border-slate-300 shadow-xs hover:border-violet-600 transition-all text-sm"
                 >
                   <Mail className="w-4 h-4 text-violet-600" />
                   <span>Email me</span>
@@ -252,12 +332,12 @@ export default function HomePage() {
               </div>
 
               {/* 4-Colored Metric Badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-4 sm:pt-6">
                 <div className="premium-card p-4">
                   <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Live Systems
                   </div>
-                  <div className="mt-1 font-display text-3xl font-extrabold text-violet-700">
+                  <div className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-violet-700">
                     8+
                   </div>
                 </div>
@@ -266,7 +346,7 @@ export default function HomePage() {
                   <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Users Impacted
                   </div>
-                  <div className="mt-1 font-display text-3xl font-extrabold text-sky-600">
+                  <div className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-sky-600">
                     10,000+
                   </div>
                 </div>
@@ -275,7 +355,7 @@ export default function HomePage() {
                   <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Free Tier Mastery
                   </div>
-                  <div className="mt-1 font-display text-3xl font-extrabold text-emerald-600">
+                  <div className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-emerald-600">
                     100%
                   </div>
                 </div>
@@ -284,7 +364,7 @@ export default function HomePage() {
                   <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Edge Response
                   </div>
-                  <div className="mt-1 font-display text-3xl font-extrabold text-amber-600">
+                  <div className="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-amber-600">
                     &lt;50ms
                   </div>
                 </div>
